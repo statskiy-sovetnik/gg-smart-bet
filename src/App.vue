@@ -19,7 +19,11 @@
 </script>
 
 <style lang="scss">
+  @import './style';
+
+  $bgColor: #2c243b;
+
   body {
-    background: blue;
+    background: $bgColor;
   }
 </style>
