@@ -1,13 +1,16 @@
 pragma solidity >=0.4.22 <0.9.0;
 
+
 struct Team {
   string name;
 }
+
 
 struct Match {
   Team team_1;
   Team team_2;
 }
+
 
 struct SportsEvent {
   uint8 id;
@@ -16,13 +19,15 @@ struct SportsEvent {
   uint8 team_2_win_percent;
 }
 
+
 contract GGbet {
   address public owner = msg.sender;
 
   Match[] private matches_set; // storage, obviously - it is shared between function calls and transactions
   SportsEvent[] private sports_events_set;
 
-  SportsEvent public current_event;
+  SportsEvent public current_sports_event;
+  bool public sports_event_in_progress = false;
 
   modifier restricted() {
     require(
@@ -36,18 +41,22 @@ contract GGbet {
     PUBLIC functions
   */
 
-  function setCurrentEventById(uint8 _id) restricted public {
-    current_event = getSportsEventById(_id);
+  function setCurrentSportsEventById(uint8 _id) public restricted {
+    current_sports_event = getSportsEventById(_id);
+    sports_event_in_progress = true;
   }
 
-  function setPredefinedSportsEvents() public restricted {
-    setPredefinedMatches();
+  function initializeSportsEvents() public restricted {
+    initializeMatches();
 
     uint matches_count = matches_set.length;
 
     for (uint i = 0; i < matches_count; i++) {
       uint8 id = uint8(i);
-      SportsEvent memory _event = generateEventFromMatch(matches_set[i], id);
+      SportsEvent memory _event = generateSportsEventFromMatch(
+        matches_set[i],
+        id
+      );
       sports_events_set.push(_event);
     }
   }
@@ -61,9 +70,7 @@ contract GGbet {
   */
 
   function getSportsEventById(uint8 _id) private view returns (SportsEvent memory) {
-    uint events_num = sports_events_set.length;
-
-    for(uint i = 0; i < events_num; i++) {
+    for(uint i = 0; i < sports_events_set.length; i++) {
       if (_id == sports_events_set[i].id) {
         return sports_events_set[i];
       }
@@ -72,14 +79,21 @@ contract GGbet {
     revert("There is no event with this id");
   }
 
-  function setPredefinedMatches() private {
+  function initializeMatches() private {
     Match memory lfc_vs_barca = getLfcVsBarcaMatch();
     Match memory bayern_vs_mancity = getBayernVsMancityMatch();
     matches_set.push(lfc_vs_barca);
     matches_set.push(bayern_vs_mancity);
   }
 
-  function generateEventFromMatch(Match memory _match, uint8 _id) private pure returns (SportsEvent memory) {
+  function generateSportsEventFromMatch(
+    Match memory _match,
+    uint8 _id
+  )
+    private
+    pure
+    returns (SportsEvent memory)
+  {
     return SportsEvent({
       id: _id,
       match_data: _match,

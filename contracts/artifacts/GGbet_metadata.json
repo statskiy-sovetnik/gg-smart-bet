@@ -60,98 +60,61 @@
 				"type": "function"
 			},
 			{
-				"inputs": [
-					{
-						"internalType": "uint256",
-						"name": "",
-						"type": "uint256"
-					}
-				],
-				"name": "events_set",
+				"inputs": [],
+				"name": "getSportsEventsSet",
 				"outputs": [
-					{
-						"internalType": "uint8",
-						"name": "id",
-						"type": "uint8"
-					},
 					{
 						"components": [
 							{
-								"components": [
-									{
-										"internalType": "string",
-										"name": "name",
-										"type": "string"
-									}
-								],
-								"internalType": "struct Team",
-								"name": "team_1",
-								"type": "tuple"
+								"internalType": "uint8",
+								"name": "id",
+								"type": "uint8"
 							},
 							{
 								"components": [
 									{
-										"internalType": "string",
-										"name": "name",
-										"type": "string"
+										"components": [
+											{
+												"internalType": "string",
+												"name": "name",
+												"type": "string"
+											}
+										],
+										"internalType": "struct Team",
+										"name": "team_1",
+										"type": "tuple"
+									},
+									{
+										"components": [
+											{
+												"internalType": "string",
+												"name": "name",
+												"type": "string"
+											}
+										],
+										"internalType": "struct Team",
+										"name": "team_2",
+										"type": "tuple"
 									}
 								],
-								"internalType": "struct Team",
-								"name": "team_2",
+								"internalType": "struct Match",
+								"name": "match_data",
 								"type": "tuple"
+							},
+							{
+								"internalType": "uint8",
+								"name": "team_1_win_percent",
+								"type": "uint8"
+							},
+							{
+								"internalType": "uint8",
+								"name": "team_2_win_percent",
+								"type": "uint8"
 							}
 						],
-						"internalType": "struct Match",
-						"name": "match_data",
-						"type": "tuple"
-					},
-					{
-						"internalType": "uint8",
-						"name": "team_1_win_percent",
-						"type": "uint8"
-					},
-					{
-						"internalType": "uint8",
-						"name": "team_2_win_percent",
-						"type": "uint8"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "uint256",
+						"internalType": "struct SportsEvent[]",
 						"name": "",
-						"type": "uint256"
-					}
-				],
-				"name": "matches_set",
-				"outputs": [
-					{
-						"components": [
-							{
-								"internalType": "string",
-								"name": "name",
-								"type": "string"
-							}
-						],
-						"internalType": "struct Team",
-						"name": "team_1",
-						"type": "tuple"
-					},
-					{
-						"components": [
-							{
-								"internalType": "string",
-								"name": "name",
-								"type": "string"
-							}
-						],
-						"internalType": "struct Team",
-						"name": "team_2",
-						"type": "tuple"
+						"type": "tuple[]"
 					}
 				],
 				"stateMutability": "view",
@@ -179,13 +142,6 @@
 					}
 				],
 				"name": "setCurrentEventById",
-				"outputs": [],
-				"stateMutability": "nonpayable",
-				"type": "function"
-			},
-			{
-				"inputs": [],
-				"name": "setPredefinedMatches",
 				"outputs": [],
 				"stateMutability": "nonpayable",
 				"type": "function"
@@ -226,10 +182,10 @@
 	},
 	"sources": {
 		"bookmaker-dapp/contracts/GGbet.sol": {
-			"keccak256": "0x7a0c52760994f77886c9fb49d8e4a25ec9b8070a631ef23adb88843836ce024d",
+			"keccak256": "0xec9c5f4d293e14aa14c788086caf1cb6ae19761eca57596ff6e42c9ecec91739",
 			"urls": [
-				"bzz-raw://fb7935a154d66b0d232d612edf7799459038dac2feee175144e8f7d8033d8891",
-				"dweb:/ipfs/QmPjFxCq1rtN2DPt4w1nnxDRWCQKZCGzYsteofy1KTFfhZ"
+				"bzz-raw://347204e44f8bd41a25fd34d1421977f53c6d732d0347029ef6e5219bdf0a492c",
+				"dweb:/ipfs/QmSzApwtpVHSkz96WK8KUKA5kNXPD6A1rpWLJEfpa5sqZN"
 			]
 		}
 	},
