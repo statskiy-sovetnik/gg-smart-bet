@@ -7,6 +7,7 @@
         v-if="!sports_event_in_progress"
         :gg_bet_contract="gg_bet_contract"
         :user="user"
+        @sportsEventSelect="handleSportsEventSelect"
       />
     </template>
   </div>
@@ -118,6 +119,25 @@
       this.sports_event_in_progress = await this.gg_bet_contract?.methods
         .sports_event_in_progress()
         .call();
+    }
+
+    async handleSportsEventSelect(id: string) {
+      this.loading = true;
+
+      try {
+        await this.setCurrentSportsEventById(id);
+        await this.updateSportsEvent();
+      } catch (e) {
+        alert('Unable to activate sports event');
+      }
+
+      this.loading = false;
+    }
+
+    async setCurrentSportsEventById(id: string) {
+      await this.gg_bet_contract?.methods
+        .setCurrentSportsEventById(id)
+        .send({from: this.user.account});
     }
   }
 </script>

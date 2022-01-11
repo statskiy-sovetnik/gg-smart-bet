@@ -1,7 +1,15 @@
 <template>
   <div class="container">
     <h2 class="title">No sports events are taking place right now</h2>
-    <button v-if="user.isOwnerOfGGbet" class="button">Start event</button>
+
+    <div v-if="user.isOwnerOfGGbet">
+      <SportsEventOption
+        v-for="sports_event in sports_events_set"
+        :key="sports_event.id"
+        :sports_event="sports_event"
+        @sportsEventSelect="emitSportsEventSelect"
+      />
+    </div>
   </div>
 </template>
 
@@ -10,8 +18,11 @@
   import User from '@/types/User';
   import SportsEvent from '@/types/SportsEvent';
   import {Contract} from 'web3-eth-contract';
+  import SportsEventOption from '@/components/SportsEventOption.vue';
 
   @Options({
+    components: {SportsEventOption},
+
     props: {
       user: {
         type: User,
@@ -55,6 +66,10 @@
     async getSportsEventById(id: number) {
       return await this.gg_bet_contract?.methods.getSportsEventById(id).call();
     }
+
+    emitSportsEventSelect(id: string) {
+      this.$emit('sportsEventSelect', id);
+    }
   }
 </script>
 
@@ -64,5 +79,6 @@
   .title {
     font-size: 40px;
     color: $blueActive;
+    margin-bottom: 50px;
   }
 </style>
