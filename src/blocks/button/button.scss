@@ -1,0 +1,19 @@
+@import "../../vars";
+
+.button {
+  color: #fff;
+  font-size: 13px;
+  font-style: italic;
+  text-transform: uppercase;
+  padding: 20px 35px;
+  background-color: $blueActive;
+  outline: none;
+  box-shadow: none;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+
+  &:hover {
+    background-color: $blueHover;
+  }
+}

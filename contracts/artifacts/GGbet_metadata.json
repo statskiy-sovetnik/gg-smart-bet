@@ -7,7 +7,7 @@
 		"abi": [
 			{
 				"inputs": [],
-				"name": "current_event",
+				"name": "current_sports_event",
 				"outputs": [
 					{
 						"internalType": "uint8",
@@ -122,6 +122,13 @@
 			},
 			{
 				"inputs": [],
+				"name": "initializeSportsEvents",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
 				"name": "owner",
 				"outputs": [
 					{
@@ -141,16 +148,35 @@
 						"type": "uint8"
 					}
 				],
-				"name": "setCurrentEventById",
+				"name": "setCurrentSportsEventById",
 				"outputs": [],
 				"stateMutability": "nonpayable",
 				"type": "function"
 			},
 			{
 				"inputs": [],
-				"name": "setPredefinedSportsEvents",
-				"outputs": [],
-				"stateMutability": "nonpayable",
+				"name": "sports_event_in_progress",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "sports_events_set_initialized",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
 				"type": "function"
 			}
 		],
@@ -182,10 +208,10 @@
 	},
 	"sources": {
 		"bookmaker-dapp/contracts/GGbet.sol": {
-			"keccak256": "0xec9c5f4d293e14aa14c788086caf1cb6ae19761eca57596ff6e42c9ecec91739",
+			"keccak256": "0xbf3eeb6826c31c586be0fd2947b200f0ef56f95af2e5732303623f1358566257",
 			"urls": [
-				"bzz-raw://347204e44f8bd41a25fd34d1421977f53c6d732d0347029ef6e5219bdf0a492c",
-				"dweb:/ipfs/QmSzApwtpVHSkz96WK8KUKA5kNXPD6A1rpWLJEfpa5sqZN"
+				"bzz-raw://12e04b14c12fdcaf7e9205e44ac0d4c21f559b2300149220b0793345d59ebb08",
+				"dweb:/ipfs/QmaFAUVVuExWnS1XSB2gq8rbU9im7TCtCkH4rdCqsJn4hL"
 			]
 		}
 	},

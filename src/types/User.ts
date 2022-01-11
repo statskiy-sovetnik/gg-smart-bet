@@ -1,5 +1,9 @@
-export type User = {
+export default class User {
   account: string;
-  balanceInWei: string;
-  isOwnerOfGGbet: boolean;
-};
+  balanceInWei = '';
+  isOwnerOfGGbet = false;
+
+  constructor(account: string) {
+    this.account = account;
+  }
+}

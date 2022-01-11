@@ -1,8 +1,13 @@
 <template>
   <div class="gg-root">
     <Loading v-if="loading" />
+
     <template v-else>
-      <page-header />
+      <SportsEventSelection
+        v-if="!sports_event_in_progress"
+        :gg_bet_contract="gg_bet_contract"
+        :user="user"
+      />
     </template>
   </div>
 </template>
@@ -14,13 +19,15 @@
   import Loading from '@/components/Loading.vue';
   import Web3 from 'web3';
   import {getConnectedWeb3Instance} from '@/utils/getConnectedWeb3Instance';
-  import {User} from '@/types/User';
+  import User from '@/types/User';
   import {fetchGGbetAbi} from '@/utils/fetchGGbetAbi';
   import {Contract} from 'web3-eth-contract';
   import SportsEvent from '@/types/SportsEvent';
+  import SportsEventSelection from '@/components/SportsEventSelection.vue';
 
   @Options({
     components: {
+      SportsEventSelection,
       PageHeader,
       HelloWorld,
       Loading,
@@ -38,7 +45,7 @@
     };
     accounts: string[] = [];
 
-    gg_bet_contract_address = '0x9a809F814cbEf67bA042C133819c2F11c3612934';
+    gg_bet_contract_address = '0xEcc449c979472b1C9B4Ca4f2aF49C472d255161d';
     gg_bet_contract: Contract | null = null;
     sports_event_in_progress = false;
     sports_event: SportsEvent | null = null;
