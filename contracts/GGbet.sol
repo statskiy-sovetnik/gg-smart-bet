@@ -14,10 +14,13 @@ contract GGbet {
   address public owner = msg.sender;
 
   SportsEvent[] private sports_events_set;
-  bool public sports_events_set_initialized = false;
 
   SportsEvent public current_sports_event;
   bool public sports_event_in_progress = false;
+
+  constructor() {
+    initializeSportsEvents();
+  }
 
   modifier restricted() {
     require(
@@ -50,11 +53,9 @@ contract GGbet {
     sports_event_in_progress = true;
   }
 
-  function initializeSportsEvents() public restricted {
+  function initializeSportsEvents() private {
     sports_events_set.push(getLfcVsBarcaEvent());
     sports_events_set.push(getBayernVsMancityEvent());
-
-    sports_events_set_initialized = true;
   }
 
   function getSportsEventsCount() public view restricted returns (uint) {

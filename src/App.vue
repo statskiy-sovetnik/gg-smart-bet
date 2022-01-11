@@ -45,7 +45,7 @@
     };
     accounts: string[] = [];
 
-    gg_bet_contract_address = '0xEcc449c979472b1C9B4Ca4f2aF49C472d255161d';
+    gg_bet_contract_address = '0xBC505566119B7AC5C92C7713229D0E107C31eA16';
     gg_bet_contract: Contract | null = null;
     sports_event_in_progress = false;
     sports_event: SportsEvent | null = null;

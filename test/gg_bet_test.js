@@ -10,14 +10,7 @@ contract('GGbet', ([owner, user_1]) => {
   });
 
   describe('Checking initial contract state', async () => {
-    it('Sports events set is empty', async () => {
-      const flag = await gg_bet.sports_events_set_initialized();
-      assert.equal(flag, false, 'flag should be false');
-    });
-
     it('Sports events initialized', async () => {
-      // initializing sports events
-      await gg_bet.initializeSportsEvents({from: owner});
       const sports_events_count = await gg_bet.getSportsEventsCount({
         from: owner,
       });
@@ -27,11 +20,6 @@ contract('GGbet', ([owner, user_1]) => {
         0,
         'sports events set must not be empty'
       );
-    });
-
-    it('Sports events flag is updated', async () => {
-      const flag = await gg_bet.sports_events_set_initialized();
-      assert.equal(flag, true, 'flag should be true');
     });
   });
 

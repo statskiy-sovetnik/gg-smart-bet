@@ -33,7 +33,6 @@
 
     async created() {
       if (this.user.isOwnerOfGGbet) {
-        await this.checkSportsEventsSet();
         await this.updateSportsEventsSet();
       }
     }
@@ -55,27 +54,6 @@
 
     async getSportsEventById(id: number) {
       return await this.gg_bet_contract?.methods.getSportsEventById(id).call();
-    }
-
-    async checkSportsEventsSet() {
-      const sports_events_set_initialized =
-        await this.getSportsEventsInitFlag();
-
-      if (!sports_events_set_initialized) {
-        await this.initializeGGbetSportsEvents();
-      }
-    }
-
-    async initializeGGbetSportsEvents() {
-      await this.gg_bet_contract?.methods.initializeSportsEvents().send({
-        from: this.user.account,
-      });
-    }
-
-    async getSportsEventsInitFlag() {
-      return await this.gg_bet_contract?.methods
-        .sports_events_set_initialized()
-        .call();
     }
   }
 </script>
