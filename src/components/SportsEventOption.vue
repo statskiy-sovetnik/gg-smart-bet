@@ -2,7 +2,19 @@
   <div class="sports-event-option">
     <div class="data-block">
       <span class="team-name">{{ sports_event.team_1_name }}</span>
+      <img
+        :src="sports_event.team_1_logo"
+        alt="team_1_logo"
+        class="team-logo"
+      />
+
       <span class="team-divider">-</span>
+
+      <img
+        :src="sports_event.team_2_logo"
+        alt="team_2_logo"
+        class="team-logo"
+      />
       <span class="team-name">{{ sports_event.team_2_name }}</span>
     </div>
 
@@ -55,6 +67,11 @@
   .team-name {
     font-size: 24px;
     line-height: 1.3;
+    margin: 0 20px;
+  }
+
+  .team-logo {
+    height: 50px;
   }
 
   .team-divider {

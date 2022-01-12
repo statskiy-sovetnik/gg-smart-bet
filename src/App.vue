@@ -9,6 +9,8 @@
         :user="user"
         @sportsEventSelect="handleSportsEventSelect"
       />
+
+      <SportsEventExtended v-else :sports_event="sports_event" />
     </template>
   </div>
 </template>
@@ -25,9 +27,11 @@
   import {Contract} from 'web3-eth-contract';
   import SportsEvent from '@/types/SportsEvent';
   import SportsEventSelection from '@/components/SportsEventSelection.vue';
+  import SportsEventExtended from '@/components/SportsEventExtended.vue';
 
   @Options({
     components: {
+      SportsEventExtended,
       SportsEventSelection,
       PageHeader,
       HelloWorld,
@@ -46,7 +50,7 @@
     };
     accounts: string[] = [];
 
-    gg_bet_contract_address = '0xBC505566119B7AC5C92C7713229D0E107C31eA16';
+    gg_bet_contract_address = '0xd2A04C613E54cc0Ed014bE7f439b6799da347688';
     gg_bet_contract: Contract | null = null;
     sports_event_in_progress = false;
     sports_event: SportsEvent | null = null;
@@ -149,5 +153,6 @@
   body {
     font-family: 'Roboto Condensed', sans-serif;
     background: $bgColor;
+    margin: 0;
   }
 </style>

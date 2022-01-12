@@ -7,6 +7,11 @@
 		"abi": [
 			{
 				"inputs": [],
+				"stateMutability": "nonpayable",
+				"type": "constructor"
+			},
+			{
+				"inputs": [],
 				"name": "current_sports_event",
 				"outputs": [
 					{
@@ -15,35 +20,53 @@
 						"type": "uint8"
 					},
 					{
-						"components": [
-							{
-								"components": [
-									{
-										"internalType": "string",
-										"name": "name",
-										"type": "string"
-									}
-								],
-								"internalType": "struct Team",
-								"name": "team_1",
-								"type": "tuple"
-							},
-							{
-								"components": [
-									{
-										"internalType": "string",
-										"name": "name",
-										"type": "string"
-									}
-								],
-								"internalType": "struct Team",
-								"name": "team_2",
-								"type": "tuple"
-							}
-						],
-						"internalType": "struct Match",
-						"name": "match_data",
-						"type": "tuple"
+						"internalType": "string",
+						"name": "team_1_name",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "team_2_name",
+						"type": "string"
+					},
+					{
+						"internalType": "uint8",
+						"name": "team_1_win_percent",
+						"type": "uint8"
+					},
+					{
+						"internalType": "uint8",
+						"name": "team_2_win_percent",
+						"type": "uint8"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint8",
+						"name": "_id",
+						"type": "uint8"
+					}
+				],
+				"name": "getSportsEventById",
+				"outputs": [
+					{
+						"internalType": "uint8",
+						"name": "id",
+						"type": "uint8"
+					},
+					{
+						"internalType": "string",
+						"name": "team_1_name",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "team_2_name",
+						"type": "string"
 					},
 					{
 						"internalType": "uint8",
@@ -61,70 +84,15 @@
 			},
 			{
 				"inputs": [],
-				"name": "getSportsEventsSet",
+				"name": "getSportsEventsCount",
 				"outputs": [
 					{
-						"components": [
-							{
-								"internalType": "uint8",
-								"name": "id",
-								"type": "uint8"
-							},
-							{
-								"components": [
-									{
-										"components": [
-											{
-												"internalType": "string",
-												"name": "name",
-												"type": "string"
-											}
-										],
-										"internalType": "struct Team",
-										"name": "team_1",
-										"type": "tuple"
-									},
-									{
-										"components": [
-											{
-												"internalType": "string",
-												"name": "name",
-												"type": "string"
-											}
-										],
-										"internalType": "struct Team",
-										"name": "team_2",
-										"type": "tuple"
-									}
-								],
-								"internalType": "struct Match",
-								"name": "match_data",
-								"type": "tuple"
-							},
-							{
-								"internalType": "uint8",
-								"name": "team_1_win_percent",
-								"type": "uint8"
-							},
-							{
-								"internalType": "uint8",
-								"name": "team_2_win_percent",
-								"type": "uint8"
-							}
-						],
-						"internalType": "struct SportsEvent[]",
+						"internalType": "uint256",
 						"name": "",
-						"type": "tuple[]"
+						"type": "uint256"
 					}
 				],
 				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [],
-				"name": "initializeSportsEvents",
-				"outputs": [],
-				"stateMutability": "nonpayable",
 				"type": "function"
 			},
 			{
@@ -165,19 +133,6 @@
 				],
 				"stateMutability": "view",
 				"type": "function"
-			},
-			{
-				"inputs": [],
-				"name": "sports_events_set_initialized",
-				"outputs": [
-					{
-						"internalType": "bool",
-						"name": "",
-						"type": "bool"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
 			}
 		],
 		"devdoc": {
@@ -208,10 +163,10 @@
 	},
 	"sources": {
 		"bookmaker-dapp/contracts/GGbet.sol": {
-			"keccak256": "0xbf3eeb6826c31c586be0fd2947b200f0ef56f95af2e5732303623f1358566257",
+			"keccak256": "0xf3b8a39fd4e5bee1d611f63a51eb721c686218ca9a8094234f813605a2085f04",
 			"urls": [
-				"bzz-raw://12e04b14c12fdcaf7e9205e44ac0d4c21f559b2300149220b0793345d59ebb08",
-				"dweb:/ipfs/QmaFAUVVuExWnS1XSB2gq8rbU9im7TCtCkH4rdCqsJn4hL"
+				"bzz-raw://7a5bd4a68d012b3be6112e62401a951867ffc8ee147ee8f13718a77d64d4df64",
+				"dweb:/ipfs/QmTDngi5Uqm1hrj69aR1eXNMchjnS2XE5vVvgSa6mmFUZy"
 			]
 		}
 	},

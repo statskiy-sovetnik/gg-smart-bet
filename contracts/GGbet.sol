@@ -5,6 +5,8 @@ struct SportsEvent {
   uint8 id;
   string team_1_name;
   string team_2_name;
+  string team_1_logo;
+  string team_2_logo;
   uint8 team_1_win_percent;
   uint8 team_2_win_percent;
 }
@@ -39,6 +41,8 @@ contract GGbet {
       uint8 id,
       string memory team_1_name,
       string memory team_2_name,
+      string memory team_1_logo,
+      string memory team_2_logo,
       uint8 team_1_win_percent,
       uint8 team_2_win_percent
     ) = getSportsEventById(_id);
@@ -47,6 +51,8 @@ contract GGbet {
       id: id,
       team_1_name: team_1_name,
       team_2_name: team_2_name,
+      team_1_logo: team_1_logo,
+      team_2_logo: team_2_logo,
       team_1_win_percent: team_1_win_percent,
       team_2_win_percent: team_2_win_percent
     });
@@ -70,6 +76,8 @@ contract GGbet {
       uint8 id,
       string memory team_1_name,
       string memory team_2_name,
+      string memory team_1_logo,
+      string memory team_2_logo,
       uint8 team_1_win_percent,
       uint8 team_2_win_percent
     )
@@ -82,6 +90,8 @@ contract GGbet {
           temp.id,
           temp.team_1_name,
           temp.team_2_name,
+          temp.team_1_logo,
+          temp.team_2_logo,
           temp.team_1_win_percent,
           temp.team_2_win_percent
         );
@@ -100,6 +110,8 @@ contract GGbet {
       id: 0,
       team_1_name : 'FC Liverpool',
       team_2_name : 'FC Barcelona',
+      team_1_logo: '//storage.mds.yandex.net/get-sport/10493/a1f72d2597a2184052676f7a8cbcd58c.png',
+      team_2_logo: '//storage.mds.yandex.net/get-sport/69603/9288c960498f253e15610e40d731e71f.png',
       team_1_win_percent: 65,
       team_2_win_percent: 10
     });
@@ -110,6 +122,8 @@ contract GGbet {
       id: 1,
       team_1_name : 'FC Bayern',
       team_2_name : 'FC Manchester City',
+      team_1_logo: '//storage.mds.yandex.net/get-sport/67389/dabd286313551986e4f9e794f501b72e.png',
+      team_2_logo: '//storage.mds.yandex.net/get-sport/67389/66e93ce4d1eb16643864f3f311d3ef83.png',
       team_1_win_percent: 25,
       team_2_win_percent: 35
     });

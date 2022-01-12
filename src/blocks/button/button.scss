@@ -16,4 +16,18 @@
   &:hover {
     background-color: $blueHover;
   }
+
+  &._small {
+    padding: 10px 15px;
+    font-size: 11px;
+  }
+
+  &._pink {
+    color: $pinkLight;
+    background-color: $pinkBg;
+
+    &:hover {
+      background-color: $pinkHover;
+    }
+  }
 }
