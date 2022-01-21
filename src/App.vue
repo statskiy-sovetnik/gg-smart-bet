@@ -10,15 +10,18 @@
         @sportsEventSelect="handleSportsEventSelect"
       />
 
-      <SportsEventExtended v-else :sports_event="sports_event" />
+      <SportsEventExtended
+        v-else
+        :gg_bet_contract="gg_bet_contract"
+        :sports_event="sports_event"
+        :user="user"
+      />
     </template>
   </div>
 </template>
 
 <script lang="ts">
   import {Options, Vue} from 'vue-class-component';
-  import HelloWorld from './components/HelloWorld.vue';
-  import PageHeader from '@/components/PageHeader.vue';
   import Loading from '@/components/Loading.vue';
   import Web3 from 'web3';
   import {getConnectedWeb3Instance} from '@/utils/getConnectedWeb3Instance';
@@ -33,8 +36,6 @@
     components: {
       SportsEventExtended,
       SportsEventSelection,
-      PageHeader,
-      HelloWorld,
       Loading,
     },
   })
@@ -50,7 +51,7 @@
     };
     accounts: string[] = [];
 
-    gg_bet_contract_address = '0xd2A04C613E54cc0Ed014bE7f439b6799da347688';
+    gg_bet_contract_address = '0x4191a3B3690465e263f160C2BD37fa1110F30422'; // Replace it to main.ts??
     gg_bet_contract: Contract | null = null;
     sports_event_in_progress = false;
     sports_event: SportsEvent | null = null;

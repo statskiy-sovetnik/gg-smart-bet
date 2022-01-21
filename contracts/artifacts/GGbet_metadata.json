@@ -12,6 +12,27 @@
 			},
 			{
 				"inputs": [],
+				"name": "betOnDraw",
+				"outputs": [],
+				"stateMutability": "payable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "betOnTeam1",
+				"outputs": [],
+				"stateMutability": "payable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "betOnTeam2",
+				"outputs": [],
+				"stateMutability": "payable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
 				"name": "current_sports_event",
 				"outputs": [
 					{
@@ -27,6 +48,16 @@
 					{
 						"internalType": "string",
 						"name": "team_2_name",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "team_1_logo",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "team_2_logo",
 						"type": "string"
 					},
 					{
@@ -69,6 +100,16 @@
 						"type": "string"
 					},
 					{
+						"internalType": "string",
+						"name": "team_1_logo",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "team_2_logo",
+						"type": "string"
+					},
+					{
 						"internalType": "uint8",
 						"name": "team_1_win_percent",
 						"type": "uint8"
@@ -85,6 +126,37 @@
 			{
 				"inputs": [],
 				"name": "getSportsEventsCount",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "getUserBet",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "bet",
+						"type": "uint256"
+					},
+					{
+						"internalType": "string",
+						"name": "outcome",
+						"type": "string"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "min_bet",
 				"outputs": [
 					{
 						"internalType": "uint256",
@@ -163,10 +235,10 @@
 	},
 	"sources": {
 		"bookmaker-dapp/contracts/GGbet.sol": {
-			"keccak256": "0xf3b8a39fd4e5bee1d611f63a51eb721c686218ca9a8094234f813605a2085f04",
+			"keccak256": "0x17094cf86ec370e8978430546dfa22316446ecaccbef7afbc5d65446646e0bd5",
 			"urls": [
-				"bzz-raw://7a5bd4a68d012b3be6112e62401a951867ffc8ee147ee8f13718a77d64d4df64",
-				"dweb:/ipfs/QmTDngi5Uqm1hrj69aR1eXNMchjnS2XE5vVvgSa6mmFUZy"
+				"bzz-raw://6d382d5464c2e4e7e55bcf770da49f8d0a5ab233d973f8dd53079420f497948c",
+				"dweb:/ipfs/QmQuvhuNTfoN9Bqv31nHbzTj4t91yMmGHtmQM4csGAdqUh"
 			]
 		}
 	},

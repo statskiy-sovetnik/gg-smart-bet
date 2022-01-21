@@ -1,4 +1,4 @@
-pragma solidity >=0.4.22 <0.9.0;
+pragma solidity >=0.8.0 <0.9.0;
 
 
 struct SportsEvent {
@@ -16,9 +16,13 @@ contract GGbet {
   address public owner = msg.sender;
 
   SportsEvent[] private sports_events_set;
-
   SportsEvent public current_sports_event;
   bool public sports_event_in_progress = false;
+
+  uint public min_bet = 300000000000000; // 0.0003 eth;
+  mapping(address => uint) private team_1_bets;
+  mapping(address => uint) private draw_bets;
+  mapping(address => uint) private team_2_bets;
 
   constructor() {
     initializeSportsEvents();
@@ -30,6 +34,12 @@ contract GGbet {
       "This function is restricted to the contract's owner"
     );
     _;
+  }
+
+  event Received(address, uint);
+
+  receive() external payable {
+    emit Received(msg.sender, msg.value);
   }
 
   /*
@@ -101,6 +111,54 @@ contract GGbet {
     revert("There is no event with this id");
   }
 
+  function betOnTeam1() public payable {
+    require(sports_event_in_progress, 'Current sports event is over');
+    require(msg.value >= min_bet, 'Minimal bet is 0.0003 ETH');
+    requireUserHasNoActiveBets();
+
+    team_1_bets[msg.sender] = msg.value;
+  }
+
+  function betOnDraw() public payable {
+    require(sports_event_in_progress, 'Current sports event is over');
+    require(msg.value >= min_bet, 'Minimal bet is 0.0003 ETH');
+    requireUserHasNoActiveBets();
+
+    draw_bets[msg.sender] = msg.value;
+  }
+
+  function betOnTeam2() public payable {
+    require(sports_event_in_progress, 'Current sports event is over');
+    require(msg.value >= min_bet, 'Minimal bet is 0.0003 ETH');
+    requireUserHasNoActiveBets();
+
+    team_2_bets[msg.sender] = msg.value;
+  }
+
+  function getUserBet() public view returns(uint bet, string memory outcome) {
+    require(sports_event_in_progress, 'Current sports event is over');
+    uint team_1_bet = team_1_bets[msg.sender];
+    uint draw_bet = draw_bets[msg.sender];
+    uint team_2_bet = team_2_bets[msg.sender];
+    uint _bet = 0;
+    string memory _outcome;
+
+    if (team_1_bet >= min_bet) {
+      _bet = team_1_bet;
+      _outcome = 'team_1';
+    }
+    else if (draw_bet >= min_bet) {
+      _bet = draw_bet;
+      _outcome = 'draw';
+    }
+    else if (team_2_bet >= min_bet) {
+      _bet = team_2_bet;
+      _outcome = 'team_2';
+    }
+
+    return (_bet, _outcome);
+  }
+
   /*
     PRIVATE functions
   */
@@ -127,5 +185,11 @@ contract GGbet {
       team_1_win_percent: 25,
       team_2_win_percent: 35
     });
+  }
+
+  function requireUserHasNoActiveBets() private view {
+    (uint bet,) = getUserBet();
+
+    require(bet == 0, 'This user has already make a bet');
   }
 }

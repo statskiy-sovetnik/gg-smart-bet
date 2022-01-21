@@ -1,0 +1,16 @@
+@import "../../vars";
+
+.input {
+  background: transparent;
+  border: none;
+  padding: 15px 9px;
+  outline: none;
+  border-bottom: 1px solid $blueDark;
+  color: $blueDark;
+  font-weight: bold;
+
+  &:focus, &:hover {
+    color: $blueActive;
+    border-color: $blueActive;
+  }
+}
