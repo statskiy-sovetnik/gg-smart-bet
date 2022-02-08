@@ -24,12 +24,14 @@
           </div>
         </div>
 
-        <div v-if="user_has_made_bets" class="user-bet-info-block">
+        <div v-if="user_bet_is_accepted" class="user-bet-info-block">
           <p class="user-bet">
             Your bet is {{ user_bet_data?.bet }} Wei <br />
             on {{ outcome_label }}
           </p>
         </div>
+        <!-- Display bet pending    -->
+        <div v-else-if="bet_is_pending">Your bet is pending</div>
         <!--  A Block with buttons for betting -->
         <div v-else class="control-panel">
           <h5 class="control-title">Make your bet</h5>
@@ -98,7 +100,14 @@
   import {Contract} from 'web3-eth-contract';
   import {BigNumber} from 'bignumber.js';
   import User from '@/types/User';
+  import {EventData} from 'web3-eth-contract/types';
+  import {Transaction} from 'web3-eth/types';
+  import {PromiEvent} from 'web3-core';
   import {getConnectedWeb3Instance} from '@/utils/getConnectedWeb3Instance';
+  import {getCookie} from '@/utils/getCookie';
+  import {setCookie} from '@/utils/setCookie';
+  import {Subscription} from 'web3-core-subscriptions';
+  import {eraseCookie} from '@/utils/eraseCookie';
 
   const web3 = getConnectedWeb3Instance();
 
@@ -119,6 +128,15 @@
         required: true,
       },
     },
+
+    watch: {
+      pending_txs_event(event_obj) {
+        if (event_obj !== null) {
+          this.saveUserPendingTxHashToCookies();
+          this.bet_is_pending = true;
+        }
+      },
+    },
   })
   export default class SportsEventExtended extends Vue {
     sports_event!: SportsEvent;
@@ -128,12 +146,21 @@
       bet: string;
       outcome: string;
     } | null = null;
+    pending_txs_event: Subscription<String> | null = null;
+    bet_log: EventData | null = null;
+    bet_tx_cookie_name = 'bet_tx_hash';
+    bet_is_pending = Boolean(this.getBetPendingTxHashCookie());
+
     amount_in_wei: number = 0;
     min_bet_in_wei: BigNumber = new BigNumber(0);
     amount_value_is_correct = true;
 
-    get user_has_made_bets(): boolean {
+    get user_bet_is_accepted(): boolean {
       return this.user_bet_data?.bet !== '0';
+    }
+
+    get do_display_pending_bet(): boolean {
+      return this.bet_is_pending && !this.user_bet_is_accepted;
     }
 
     get team_1_win_coef(): number {
@@ -176,9 +203,12 @@
 
     async created() {
       await this.updateUserBetData();
+      // здесь проверить, есть ли transaction hash в куках. Если есть в куках и если !user_bet_is_accepted
+      // то транзакция в обработке. Если она в обработке, то ждать события BetAccepted
 
-      if (!this.user_has_made_bets) {
+      if (!this.user_bet_is_accepted) {
         await this.updateMinBetInWei();
+        this.subscribeOnBetAcceptance();
       }
     }
 
@@ -213,9 +243,14 @@
       this.validateAmountInput();
 
       if (this.amount_value_is_correct) {
-        await this.bet(outcome);
-        await this.updateUserBetData();
+        this.performBetWithTrack(outcome);
       }
+    }
+
+    handleBetCancel(error: Error) {
+      this.bet_is_pending = false;
+      this.pending_txs_event?.unsubscribe();
+      console.log(error);
     }
 
     validateAmountInput(): void {
@@ -232,32 +267,116 @@
       }
     }
 
-    async bet(outcome: string) {
+    performBetWithTrack(outcome: string) {
+      this.subscribeOnPendingTxs();
+      this.bet(outcome)
+        ?.on('transactionHash', () => {
+          this.subscribeOnBetAcceptance();
+          this.updateUserBetData(); // remove this and call it when event is emited (bet_log)
+        })
+        .on('error', (error: Error) => {
+          this.handleBetCancel(error);
+        });
+    }
+
+    bet(outcome: string): PromiEvent<any> | undefined {
+      let t;
+
       if (outcome === 'team_1') {
-        await this._betOnTeam1();
+        t = this._betOnTeam1();
       } else if (outcome === 'draw') {
-        await this._betOnDraw();
+        t = this._betOnDraw();
       } else if (outcome === 'team_2') {
-        await this._betOnTeam2();
+        t = this._betOnTeam2();
       }
+
+      return t;
     }
 
-    async _betOnTeam1() {
-      await this.gg_bet_contract?.methods.betOnTeam1().send({
+    subscribeOnBetAcceptance() {
+      // add filter by user address
+      const _this = this;
+      const options = {
+        filter: {
+          _address: this.user.account,
+        },
+      };
+
+      this.gg_bet_contract?.once(
+        // здесь нужно проверить что нужный адрес
+        'BetAccepted',
+        options,
+        (error, event: EventData) => {
+          if (!error) {
+            _this.handleBetAcceptanceEvent(event);
+          }
+        }
+      );
+    }
+
+    handleBetAcceptanceEvent(event: EventData) {
+      this.bet_log = event;
+      eraseCookie(this.bet_tx_cookie_name);
+      this.unsubscribeOnPendingTxs();
+      this.bet_is_pending = false;
+      console.log(
+        'Handled bet acceptance. Cookie: ',
+        Boolean(getCookie(this.bet_tx_cookie_name))
+      );
+    }
+
+    subscribeOnPendingTxs() {
+      this.pending_txs_event = web3.eth.subscribe('pendingTransactions');
+    }
+
+    unsubscribeOnPendingTxs() {
+      this.pending_txs_event?.unsubscribe();
+    }
+
+    saveUserPendingTxHashToCookies() {
+      console.log('filtering pending txs...');
+      //@ts-ignore
+      this.pending_txs_event?.on('data', async (tx_hash: string) => {
+        const tx: Transaction = await web3.eth.getTransaction(tx_hash);
+        if (this.isTxFromUserToGGbet(tx)) {
+          setCookie(this.bet_tx_cookie_name, tx_hash);
+
+          const test_tx_hash = getCookie(this.bet_tx_cookie_name);
+          if (test_tx_hash) {
+            const test_tx = await web3.eth.getTransaction(test_tx_hash);
+            console.log('I did it: ', test_tx_hash, test_tx);
+          }
+        }
+      });
+    }
+
+    getBetPendingTxHashCookie(): string | undefined {
+      return getCookie(this.bet_tx_cookie_name);
+    }
+
+    isTxFromUserToGGbet(tx: Transaction) {
+      return (
+        tx.from === this.user.account &&
+        tx.to === this.gg_bet_contract.options.address
+      );
+    }
+
+    _betOnTeam1(): PromiEvent<any> {
+      return this.gg_bet_contract?.methods.betOnTeam1().send({
         from: this.user.account,
         value: this.amount_in_wei,
       });
     }
 
-    async _betOnDraw() {
-      await this.gg_bet_contract?.methods.betOnDraw().send({
+    _betOnDraw(): PromiEvent<any> {
+      return this.gg_bet_contract?.methods.betOnDraw().send({
         from: this.user.account,
         value: this.amount_in_wei,
       });
     }
 
-    async _betOnTeam2() {
-      await this.gg_bet_contract?.methods.betOnTeam2().send({
+    _betOnTeam2(): PromiEvent<any> {
+      return this.gg_bet_contract?.methods.betOnTeam2().send({
         from: this.user.account,
         value: this.amount_in_wei,
       });

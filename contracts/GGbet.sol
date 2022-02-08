@@ -36,11 +36,7 @@ contract GGbet {
     _;
   }
 
-  event Received(address, uint);
-
-  receive() external payable {
-    emit Received(msg.sender, msg.value);
-  }
+  event BetAccepted(address indexed _address, uint _amount, string _outcome);
 
   /*
     PUBLIC functions
@@ -117,6 +113,8 @@ contract GGbet {
     requireUserHasNoActiveBets();
 
     team_1_bets[msg.sender] = msg.value;
+    string memory _outcome = 'team_1';
+    emit BetAccepted(msg.sender, msg.value, _outcome);
   }
 
   function betOnDraw() public payable {
@@ -125,6 +123,8 @@ contract GGbet {
     requireUserHasNoActiveBets();
 
     draw_bets[msg.sender] = msg.value;
+    string memory _outcome = 'draw';
+    emit BetAccepted(msg.sender, msg.value, _outcome);
   }
 
   function betOnTeam2() public payable {
@@ -133,6 +133,8 @@ contract GGbet {
     requireUserHasNoActiveBets();
 
     team_2_bets[msg.sender] = msg.value;
+    string memory _outcome = 'team_2';
+    emit BetAccepted(msg.sender, msg.value, _outcome);
   }
 
   function getUserBet() public view returns(uint bet, string memory outcome) {

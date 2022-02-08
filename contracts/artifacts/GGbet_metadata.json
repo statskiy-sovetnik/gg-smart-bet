@@ -11,6 +11,25 @@
 				"type": "constructor"
 			},
 			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "_address",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "_amount",
+						"type": "uint256"
+					}
+				],
+				"name": "Received",
+				"type": "event"
+			},
+			{
 				"inputs": [],
 				"name": "betOnDraw",
 				"outputs": [],
@@ -156,6 +175,19 @@
 			},
 			{
 				"inputs": [],
+				"name": "how_is_that",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
 				"name": "min_bet",
 				"outputs": [
 					{
@@ -205,6 +237,10 @@
 				],
 				"stateMutability": "view",
 				"type": "function"
+			},
+			{
+				"stateMutability": "payable",
+				"type": "receive"
 			}
 		],
 		"devdoc": {
@@ -235,10 +271,10 @@
 	},
 	"sources": {
 		"bookmaker-dapp/contracts/GGbet.sol": {
-			"keccak256": "0x17094cf86ec370e8978430546dfa22316446ecaccbef7afbc5d65446646e0bd5",
+			"keccak256": "0xe244d498fa3427a2884df79287f39ab2a42f74b597285d40af16cc1494458166",
 			"urls": [
-				"bzz-raw://6d382d5464c2e4e7e55bcf770da49f8d0a5ab233d973f8dd53079420f497948c",
-				"dweb:/ipfs/QmQuvhuNTfoN9Bqv31nHbzTj4t91yMmGHtmQM4csGAdqUh"
+				"bzz-raw://e350e36e00a9a3b6e9f7694855530cd70852222699cf8524038ca60d4ffd05d2",
+				"dweb:/ipfs/QmR3EKSrNosniagrbSPtf524j2PHwXmibe5JEtNDrk6HKb"
 			]
 		}
 	},

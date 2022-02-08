@@ -51,7 +51,7 @@
     };
     accounts: string[] = [];
 
-    gg_bet_contract_address = '0x4191a3B3690465e263f160C2BD37fa1110F30422'; // Replace it to main.ts??
+    gg_bet_contract_address = '0xEd23b3219cf811fC94eBd659921282de56A042df'; // Move it to main.ts??
     gg_bet_contract: Contract | null = null;
     sports_event_in_progress = false;
     sports_event: SportsEvent | null = null;
