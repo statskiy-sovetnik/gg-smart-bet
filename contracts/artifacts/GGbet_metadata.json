@@ -24,9 +24,15 @@
 						"internalType": "uint256",
 						"name": "_amount",
 						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "string",
+						"name": "_outcome",
+						"type": "string"
 					}
 				],
-				"name": "Received",
+				"name": "BetAccepted",
 				"type": "event"
 			},
 			{
@@ -175,19 +181,6 @@
 			},
 			{
 				"inputs": [],
-				"name": "how_is_that",
-				"outputs": [
-					{
-						"internalType": "bool",
-						"name": "",
-						"type": "bool"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [],
 				"name": "min_bet",
 				"outputs": [
 					{
@@ -237,10 +230,6 @@
 				],
 				"stateMutability": "view",
 				"type": "function"
-			},
-			{
-				"stateMutability": "payable",
-				"type": "receive"
 			}
 		],
 		"devdoc": {
@@ -271,10 +260,10 @@
 	},
 	"sources": {
 		"bookmaker-dapp/contracts/GGbet.sol": {
-			"keccak256": "0xe244d498fa3427a2884df79287f39ab2a42f74b597285d40af16cc1494458166",
+			"keccak256": "0xa0677b2e967628ff25c63616803c02e679cfcf35a536a7f971c8201894a14668",
 			"urls": [
-				"bzz-raw://e350e36e00a9a3b6e9f7694855530cd70852222699cf8524038ca60d4ffd05d2",
-				"dweb:/ipfs/QmR3EKSrNosniagrbSPtf524j2PHwXmibe5JEtNDrk6HKb"
+				"bzz-raw://fc83f02f2f800c9a5953515a72ee4caa8e221a51fe8e37095707ee82f1f9d06e",
+				"dweb:/ipfs/QmU1rzdcxJMvoAdKtPusrURHrKX5XQvqzzjkkNtCVWyyeD"
 			]
 		}
 	},

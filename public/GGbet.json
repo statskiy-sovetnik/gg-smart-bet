@@ -12165,6 +12165,37 @@
     "version": "0.8.4+commit.c7e474f2.Emscripten.clang"
   },
   "networks": {
+    "3": {
+      "events": {
+        "0x5d8f70e9152d0ef26d34521cebb7cb7355e74f248853d2ea29bd870fff35f522": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "_address",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "_amount",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "string",
+              "name": "_outcome",
+              "type": "string"
+            }
+          ],
+          "name": "BetAccepted",
+          "type": "event"
+        }
+      },
+      "links": {},
+      "address": "0x3f4327cE45Ca6041bDBdf23aeA6fE8b43e4a73D7"
+    },
     "5777": {
       "events": {
         "0x88a5966d370b9919b20f3e2c13ff65706f196a4e32cc2c12bf57088f88525874": {
@@ -12213,12 +12244,12 @@
         }
       },
       "links": {},
-      "address": "0xEd23b3219cf811fC94eBd659921282de56A042df",
-      "transactionHash": "0xd249959420266738c486d7a0f2f854aee8a9416a9fbeb6adf160679a4c7e2e04"
+      "address": "0x5a70086cfbd89F319e592E16F44A1929530C79e5",
+      "transactionHash": "0xef3577b625798132092dc05b00dee64cedd71803fac817a5e09da8675ff52ad3"
     }
   },
   "schemaVersion": "3.2.3",
-  "updatedAt": "2022-02-07T13:51:22.022Z",
+  "updatedAt": "2022-02-13T07:29:01.631Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",

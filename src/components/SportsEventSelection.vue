@@ -14,14 +14,14 @@
 </template>
 
 <script lang="ts">
-  import {Options, Vue} from 'vue-class-component';
+  import { Options, Vue } from 'vue-class-component';
   import User from '@/types/User';
   import SportsEvent from '@/types/SportsEvent';
-  import {Contract} from 'web3-eth-contract';
+  import { Contract } from 'web3-eth-contract';
   import SportsEventOption from '@/components/SportsEventOption.vue';
 
   @Options({
-    components: {SportsEventOption},
+    components: { SportsEventOption },
 
     props: {
       user: {
@@ -60,11 +60,13 @@
     async updateSportsEventsCount() {
       this.sports_events_count = await this.gg_bet_contract?.methods
         .getSportsEventsCount()
-        .call();
+        .call({ from: this.user.account });
     }
 
     async getSportsEventById(id: number) {
-      return await this.gg_bet_contract?.methods.getSportsEventById(id).call();
+      return await this.gg_bet_contract?.methods
+        .getSportsEventById(id)
+        .call({ from: this.user.account });
     }
 
     emitSportsEventSelect(id: string) {

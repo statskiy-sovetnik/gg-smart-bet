@@ -31,87 +31,42 @@
           </p>
         </div>
         <!-- Display bet pending    -->
-        <div v-else-if="bet_is_pending">Your bet is pending</div>
-        <!--  A Block with buttons for betting -->
-        <div v-else class="control-panel">
-          <h5 class="control-title">Make your bet</h5>
-
-          <p class="control-description">
-            Enter the amount of Wei that you willing to bet and select the
-            outcome of the match if you are smart enough
-          </p>
-
-          <div class="input-block">
-            <label class="input-label" for="bet_amount_input"
-              >Enter your bet amount</label
-            >
-            <input
-              id="bet_amount_input"
-              v-model="amount_in_wei"
-              class="input"
-              min="0"
-              type="number"
-              @input="handleAmountInput"
-            />
-          </div>
-
-          <div class="control-buttons-block">
-            <button
-              class="control-button button _pink"
-              @click="handleControlBtnClick('team_1')"
-            >
-              <span class="control-button-text _content"
-                >{{ sports_event.team_1_name }} wins</span
-              >
-              <span class="control-button-text _coef"
-                >x{{ team_1_win_coef }}</span
-              >
-            </button>
-
-            <button
-              class="control-button button _pink"
-              @click="handleControlBtnClick('draw')"
-            >
-              <span class="control-button-text _content">Draw</span>
-              <span class="control-button-text _coef">x{{ draw_coef }}</span>
-            </button>
-
-            <button
-              class="control-button button _pink"
-              @click="handleControlBtnClick('team_2')"
-            >
-              <span class="control-button-text _content"
-                >{{ sports_event.team_2_name }} wins</span
-              >
-              <span class="control-button-text _coef"
-                >x{{ team_2_win_coef }}</span
-              >
-            </button>
-          </div>
+        <div v-else-if="do_display_pending_bet" class="bet-pending-text">
+          Your bet is pending...
         </div>
+
+        <ControlPanel
+          v-else
+          :gg_bet_contract="gg_bet_contract"
+          :sports_event="sports_event"
+          @betRequest="handleBetRequest"
+        />
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-  import {Options, Vue} from 'vue-class-component';
+  import { Options, Vue } from 'vue-class-component';
   import SportsEvent from '@/types/SportsEvent';
-  import {Contract} from 'web3-eth-contract';
-  import {BigNumber} from 'bignumber.js';
+  import { Contract } from 'web3-eth-contract';
   import User from '@/types/User';
-  import {EventData} from 'web3-eth-contract/types';
-  import {Transaction} from 'web3-eth/types';
-  import {PromiEvent} from 'web3-core';
-  import {getConnectedWeb3Instance} from '@/utils/getConnectedWeb3Instance';
-  import {getCookie} from '@/utils/getCookie';
-  import {setCookie} from '@/utils/setCookie';
-  import {Subscription} from 'web3-core-subscriptions';
-  import {eraseCookie} from '@/utils/eraseCookie';
+  import { EventData } from 'web3-eth-contract/types';
+  import { Transaction } from 'web3-eth/types';
+  import { PromiEvent } from 'web3-core';
+  import { getConnectedWeb3Instance } from '@/utils/getConnectedWeb3Instance';
+  import { getCookie } from '@/utils/getCookie';
+  import { setCookie } from '@/utils/setCookie';
+  import { Subscription } from 'web3-core-subscriptions';
+  import { eraseCookie } from '@/utils/eraseCookie';
+  import ControlPanel from '@/components/ControlPanel.vue';
 
   const web3 = getConnectedWeb3Instance();
 
+  // TO-DO: убрать тесты (логи и проверки)
+
   @Options({
+    components: { ControlPanel },
     props: {
       sports_event: {
         type: SportsEvent,
@@ -151,44 +106,12 @@
     bet_tx_cookie_name = 'bet_tx_hash';
     bet_is_pending = Boolean(this.getBetPendingTxHashCookie());
 
-    amount_in_wei: number = 0;
-    min_bet_in_wei: BigNumber = new BigNumber(0);
-    amount_value_is_correct = true;
-
     get user_bet_is_accepted(): boolean {
-      return this.user_bet_data?.bet !== '0';
+      return this.user_bet_data ? this.user_bet_data.bet !== '0' : false;
     }
 
     get do_display_pending_bet(): boolean {
       return this.bet_is_pending && !this.user_bet_is_accepted;
-    }
-
-    get team_1_win_coef(): number {
-      const percent = Number(this.sports_event.team_1_win_percent);
-      const coefRaw = this.calculateCoefFromPercent(percent);
-      return Number(coefRaw.toFixed(2));
-    }
-
-    get draw_coef(): number {
-      const percent = Number(
-        100 -
-          this.sports_event.team_1_win_percent -
-          this.sports_event.team_2_win_percent
-      );
-      const coefRaw = this.calculateCoefFromPercent(percent);
-      return Number(coefRaw.toFixed(2));
-    }
-
-    get team_2_win_coef(): number {
-      const percent = Number(this.sports_event.team_2_win_percent);
-      const coefRaw = this.calculateCoefFromPercent(percent);
-      return Number(coefRaw.toFixed(2));
-    }
-
-    get min_bet_in_eth(): string {
-      //@ts-ignore
-      const min_bet_BN = web3.utils.toBN(this.min_bet_in_wei); // BigNumber instance to BN
-      return web3.utils.fromWei(min_bet_BN);
     }
 
     get outcome_label(): string {
@@ -203,11 +126,8 @@
 
     async created() {
       await this.updateUserBetData();
-      // здесь проверить, есть ли transaction hash в куках. Если есть в куках и если !user_bet_is_accepted
-      // то транзакция в обработке. Если она в обработке, то ждать события BetAccepted
 
       if (!this.user_bet_is_accepted) {
-        await this.updateMinBetInWei();
         this.subscribeOnBetAcceptance();
       }
     }
@@ -215,7 +135,7 @@
     async updateUserBetData() {
       const data = await this.gg_bet_contract?.methods
         .getUserBet()
-        .call({from: this.user.account});
+        .call({ from: this.user.account });
 
       this.user_bet_data = {
         bet: data.bet,
@@ -223,74 +143,78 @@
       };
     }
 
-    async updateMinBetInWei() {
-      this.min_bet_in_wei = await this.gg_bet_contract?.methods
-        .min_bet()
-        .call();
+    handleBetRequest(outcome: string, amount_in_wei: number) {
+      this.performBetWithTrack(outcome, amount_in_wei);
     }
 
-    calculateCoefFromPercent(percent: number): number {
-      const probability = percent / 100;
-      return 1 / probability;
-    }
-
-    handleAmountInput(): void {
-      const formatted = this.amount_in_wei.toString().replace(/[^0-9]/g, '');
-      this.amount_in_wei = Number(formatted);
-    }
-
-    async handleControlBtnClick(outcome: string) {
-      this.validateAmountInput();
-
-      if (this.amount_value_is_correct) {
-        this.performBetWithTrack(outcome);
-      }
-    }
-
-    handleBetCancel(error: Error) {
-      this.bet_is_pending = false;
-      this.pending_txs_event?.unsubscribe();
-      console.log(error);
-    }
-
-    validateAmountInput(): void {
-      this.amount_value_is_correct = true;
-      this.validateAmountInputByMinValue();
-    }
-
-    validateAmountInputByMinValue(): void {
-      const amount_value_bn = new BigNumber(this.amount_in_wei);
-
-      if (amount_value_bn.isLessThan(this.min_bet_in_wei)) {
-        alert('Minimal bet is ' + this.min_bet_in_eth + ' ether');
-        this.amount_value_is_correct = false;
-      }
-    }
-
-    performBetWithTrack(outcome: string) {
+    performBetWithTrack(outcome: string, amount_in_wei: number) {
       this.subscribeOnPendingTxs();
-      this.bet(outcome)
+      this.bet(outcome, amount_in_wei)
         ?.on('transactionHash', () => {
           this.subscribeOnBetAcceptance();
-          this.updateUserBetData(); // remove this and call it when event is emited (bet_log)
         })
         .on('error', (error: Error) => {
           this.handleBetCancel(error);
         });
     }
 
-    bet(outcome: string): PromiEvent<any> | undefined {
+    subscribeOnPendingTxs() {
+      this.pending_txs_event = web3.eth.subscribe('pendingTransactions');
+    }
+
+    unsubscribeOnPendingTxs() {
+      this.pending_txs_event?.unsubscribe();
+    }
+
+    bet(outcome: string, amount_in_wei: number): PromiEvent<any> | undefined {
       let t;
 
       if (outcome === 'team_1') {
-        t = this._betOnTeam1();
+        t = this._betOnTeam1(amount_in_wei);
       } else if (outcome === 'draw') {
-        t = this._betOnDraw();
+        t = this._betOnDraw(amount_in_wei);
       } else if (outcome === 'team_2') {
-        t = this._betOnTeam2();
+        t = this._betOnTeam2(amount_in_wei);
       }
 
       return t;
+    }
+
+    _betOnTeam1(amount_in_wei: number): PromiEvent<any> {
+      return this.gg_bet_contract?.methods.betOnTeam1().send({
+        from: this.user.account,
+        value: amount_in_wei,
+      });
+    }
+
+    _betOnDraw(amount_in_wei: number): PromiEvent<any> {
+      return this.gg_bet_contract?.methods.betOnDraw().send({
+        from: this.user.account,
+        value: amount_in_wei,
+      });
+    }
+
+    _betOnTeam2(amount_in_wei: number): PromiEvent<any> {
+      return this.gg_bet_contract?.methods.betOnTeam2().send({
+        from: this.user.account,
+        value: amount_in_wei,
+      });
+    }
+
+    saveUserPendingTxHashToCookies() {
+      //@ts-ignore
+      this.pending_txs_event?.on('data', async (tx_hash: string) => {
+        const tx: Transaction = await web3.eth.getTransaction(tx_hash);
+        if (this.isTxFromUserToGGbet(tx)) {
+          setCookie(this.bet_tx_cookie_name, tx_hash);
+        }
+      });
+    }
+
+    handleBetCancel(error: Error) {
+      this.bet_is_pending = false;
+      this.pending_txs_event?.unsubscribe();
+      console.log(error);
     }
 
     subscribeOnBetAcceptance() {
@@ -319,35 +243,7 @@
       eraseCookie(this.bet_tx_cookie_name);
       this.unsubscribeOnPendingTxs();
       this.bet_is_pending = false;
-      console.log(
-        'Handled bet acceptance. Cookie: ',
-        Boolean(getCookie(this.bet_tx_cookie_name))
-      );
-    }
-
-    subscribeOnPendingTxs() {
-      this.pending_txs_event = web3.eth.subscribe('pendingTransactions');
-    }
-
-    unsubscribeOnPendingTxs() {
-      this.pending_txs_event?.unsubscribe();
-    }
-
-    saveUserPendingTxHashToCookies() {
-      console.log('filtering pending txs...');
-      //@ts-ignore
-      this.pending_txs_event?.on('data', async (tx_hash: string) => {
-        const tx: Transaction = await web3.eth.getTransaction(tx_hash);
-        if (this.isTxFromUserToGGbet(tx)) {
-          setCookie(this.bet_tx_cookie_name, tx_hash);
-
-          const test_tx_hash = getCookie(this.bet_tx_cookie_name);
-          if (test_tx_hash) {
-            const test_tx = await web3.eth.getTransaction(test_tx_hash);
-            console.log('I did it: ', test_tx_hash, test_tx);
-          }
-        }
-      });
+      this.updateUserBetData();
     }
 
     getBetPendingTxHashCookie(): string | undefined {
@@ -359,27 +255,6 @@
         tx.from === this.user.account &&
         tx.to === this.gg_bet_contract.options.address
       );
-    }
-
-    _betOnTeam1(): PromiEvent<any> {
-      return this.gg_bet_contract?.methods.betOnTeam1().send({
-        from: this.user.account,
-        value: this.amount_in_wei,
-      });
-    }
-
-    _betOnDraw(): PromiEvent<any> {
-      return this.gg_bet_contract?.methods.betOnDraw().send({
-        from: this.user.account,
-        value: this.amount_in_wei,
-      });
-    }
-
-    _betOnTeam2(): PromiEvent<any> {
-      return this.gg_bet_contract?.methods.betOnTeam2().send({
-        from: this.user.account,
-        value: this.amount_in_wei,
-      });
     }
   }
 </script>
@@ -440,53 +315,12 @@
       font-size: 75px;
     }
 
-    .control-panel {
-      display: inline-flex;
-      flex-direction: column;
-      align-items: center;
-      border-top: 1px solid black;
-    }
-
-    .control-title {
-      font-size: 17px;
-      line-height: 1.05;
-      text-transform: uppercase;
-      font-style: italic;
+    .bet-pending-text {
       color: $pinkActive;
-    }
-
-    .control-description {
-      font-size: 13px;
-      text-align: left;
-      color: #fff;
-      margin: 0 0 50px;
-    }
-
-    .input-block {
-      display: flex;
-      align-items: center;
-      margin-bottom: 30px;
-    }
-
-    .input-label {
-      margin-right: 20px;
-      color: $blueDark;
-    }
-
-    .control-buttons-block {
-      display: flex;
-    }
-
-    .control-button {
-      &:not(:last-child) {
-        margin-right: 15px;
-      }
-    }
-
-    .control-button-text {
-      &._content {
-        margin-right: 35px;
-      }
+      font-size: 24px;
+      font-weight: bold;
+      font-style: italic;
+      text-transform: uppercase;
     }
 
     .user-bet {

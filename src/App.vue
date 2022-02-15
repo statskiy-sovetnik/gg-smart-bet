@@ -21,13 +21,13 @@
 </template>
 
 <script lang="ts">
-  import {Options, Vue} from 'vue-class-component';
+  import { Options, Vue } from 'vue-class-component';
   import Loading from '@/components/Loading.vue';
   import Web3 from 'web3';
-  import {getConnectedWeb3Instance} from '@/utils/getConnectedWeb3Instance';
+  import { getConnectedWeb3Instance } from '@/utils/getConnectedWeb3Instance';
   import User from '@/types/User';
-  import {fetchGGbetAbi} from '@/utils/fetchGGbetAbi';
-  import {Contract} from 'web3-eth-contract';
+  import { fetchGGbetAbi } from '@/utils/fetchGGbetAbi';
+  import { Contract } from 'web3-eth-contract';
   import SportsEvent from '@/types/SportsEvent';
   import SportsEventSelection from '@/components/SportsEventSelection.vue';
   import SportsEventExtended from '@/components/SportsEventExtended.vue';
@@ -51,7 +51,7 @@
     };
     accounts: string[] = [];
 
-    gg_bet_contract_address = '0xEd23b3219cf811fC94eBd659921282de56A042df'; // Move it to main.ts??
+    gg_bet_contract_address = '0x3f4327cE45Ca6041bDBdf23aeA6fE8b43e4a73D7'; // Move it to main.ts??
     gg_bet_contract: Contract | null = null;
     sports_event_in_progress = false;
     sports_event: SportsEvent | null = null;
@@ -142,7 +142,7 @@
     async setCurrentSportsEventById(id: string) {
       await this.gg_bet_contract?.methods
         .setCurrentSportsEventById(id)
-        .send({from: this.user.account});
+        .send({ from: this.user.account });
     }
   }
 </script>
