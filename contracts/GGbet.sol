@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0 <0.9.0;
 
 
@@ -11,7 +12,6 @@ struct SportsEvent {
   uint8 team_2_win_percent;
 }
 
-
 contract GGbet {
   address public owner = msg.sender;
 
@@ -23,6 +23,9 @@ contract GGbet {
   mapping(address => uint) private team_1_bets;
   mapping(address => uint) private draw_bets;
   mapping(address => uint) private team_2_bets;
+  address[] private team_1_bets_addresses;
+  address[] private team_2_bets_addresses;
+  address[] private draw_bets_addresses;
 
   constructor() {
     initializeSportsEvents();
@@ -37,6 +40,7 @@ contract GGbet {
   }
 
   event BetAccepted(address indexed _address, uint _amount, string _outcome);
+  event BetsRefunded(string _outcome);
 
   /*
     PUBLIC functions
@@ -63,11 +67,6 @@ contract GGbet {
       team_2_win_percent: team_2_win_percent
     });
     sports_event_in_progress = true;
-  }
-
-  function initializeSportsEvents() private {
-    sports_events_set.push(getLfcVsBarcaEvent());
-    sports_events_set.push(getBayernVsMancityEvent());
   }
 
   function getSportsEventsCount() public view restricted returns (uint) {
@@ -113,6 +112,7 @@ contract GGbet {
     requireUserHasNoActiveBets();
 
     team_1_bets[msg.sender] = msg.value;
+    team_1_bets_addresses.push(msg.sender);
     string memory _outcome = 'team_1';
     emit BetAccepted(msg.sender, msg.value, _outcome);
   }
@@ -123,6 +123,7 @@ contract GGbet {
     requireUserHasNoActiveBets();
 
     draw_bets[msg.sender] = msg.value;
+    draw_bets_addresses.push(msg.sender);
     string memory _outcome = 'draw';
     emit BetAccepted(msg.sender, msg.value, _outcome);
   }
@@ -133,6 +134,7 @@ contract GGbet {
     requireUserHasNoActiveBets();
 
     team_2_bets[msg.sender] = msg.value;
+    team_2_bets_addresses.push(msg.sender);
     string memory _outcome = 'team_2';
     emit BetAccepted(msg.sender, msg.value, _outcome);
   }
@@ -161,9 +163,82 @@ contract GGbet {
     return (_bet, _outcome);
   }
 
+  function endCurrentSportsEvent(
+    string memory _outcome,
+    uint8 coef_int_part,
+    uint8 coef_decimal_part
+  )
+    public restricted
+  {
+    require(sports_event_in_progress, 'Current sports event is already done');
+    requireCorrectOutcome(_outcome);
+
+    sports_event_in_progress = false;
+    refundBets(_outcome, coef_int_part, coef_decimal_part);
+    // здесь очистить память о ставках
+  }
+
   /*
     PRIVATE functions
   */
+
+  function refundBets(
+    string memory _outcome,
+    uint8 coef_int_part,
+    uint8 coef_decimal_part
+  )
+    private
+  {
+    if (stringsEqual(_outcome, 'team_1')) {
+      refundBetsOnTeam1(coef_int_part, coef_decimal_part);
+    }
+    else if (stringsEqual(_outcome, 'team_2')) {
+      refundBetsOnTeam2(coef_int_part, coef_decimal_part);
+    }
+    else if (stringsEqual(_outcome, 'draw')) {
+      refundBetsOnDraw(coef_int_part, coef_decimal_part);
+    }
+
+
+  }
+
+  function refundBetsOnTeam1(uint8 coef_int_part, uint8 coef_decimal_part) private {
+    for (uint i = 0; i < team_1_bets_addresses.length; i++) {
+      address payable user_address = payable(team_1_bets_addresses[i]);
+      uint bet_amount = team_1_bets[user_address];
+      uint refund_amount = calculateBetRefund(bet_amount, coef_int_part, coef_decimal_part);
+
+      require(refund_amount <= address(this).balance, 'Not enough ether to refund a bet');
+      user_address.transfer(refund_amount);
+    }
+
+    emit BetsRefunded('team_1');
+  }
+
+  function refundBetsOnTeam2(uint8 coef_int_part, uint8 coef_decimal_part) private {
+
+  }
+
+  function refundBetsOnDraw(uint8 coef_int_part, uint8 coef_decimal_part) private {
+
+  }
+
+  function calculateBetRefund(
+    uint bet_amount,
+    uint8 coef_int_part,
+    uint8 coef_decimal_part
+  )
+    private pure returns (uint refund_amount)
+  {
+    requireDecimalIsTwoDigit(coef_decimal_part);
+
+    return bet_amount * coef_int_part + bet_amount / 100 * coef_decimal_part;
+  }
+
+  function initializeSportsEvents() private {
+    sports_events_set.push(getLfcVsBarcaEvent());
+    sports_events_set.push(getBayernVsMancityEvent());
+  }
 
   function getLfcVsBarcaEvent() private pure returns (SportsEvent memory) {
     return SportsEvent({
@@ -192,6 +267,23 @@ contract GGbet {
   function requireUserHasNoActiveBets() private view {
     (uint bet,) = getUserBet();
 
-    require(bet == 0, 'This user has already make a bet');
+    require(bet == 0, 'This user has already made a bet');
+  }
+
+  function requireDecimalIsTwoDigit(uint8 decimal) private pure {
+    require(decimal >= 10 && decimal <= 99, 'Decimal part must be two-digit');
+  }
+
+  function requireCorrectOutcome(string memory _outcome) private pure {
+    require(
+      stringsEqual(_outcome, 'team_1') ||
+      stringsEqual(_outcome, 'team_2') ||
+      stringsEqual(_outcome, 'draw'),
+      "Incorrect outcome"
+    );
+  }
+
+  function stringsEqual(string memory a, string memory b) private pure returns (bool) {
+    return keccak256(abi.encodePacked(a)) == keccak256(abi.encodePacked(b));
   }
 }

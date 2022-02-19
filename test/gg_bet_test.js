@@ -1,6 +1,6 @@
 const GGbet = artifacts.require('GGbet');
 const Web3 = require('web3');
-const web3 = new Web3('ws://127.0.0.1:7545');
+const web3 = new Web3('ws://127.0.0.1:8545');
 const BN = web3.utils.BN;
 
 require('chai').use(require('chai-as-promised')).should();
@@ -16,10 +16,10 @@ contract('GGbet', (accounts) => {
   const user_3 = accounts[3];
   const user_4 = accounts[4];
 
-  const user_1_bet_amount_eth = 0.00045;
-  const user_2_bet_amount_eth = 0.001;
-  const user_3_bet_amount_eth = 0.0015;
-  const user_4_bet_amount_eth = 0.00075;
+  const user_1_bet_amount_eth = 0.4;
+  const user_2_bet_amount_eth = 0.9;
+  const user_3_bet_amount_eth = 0.8;
+  const user_4_bet_amount_eth = 0.3;
   const total_bet_amount_eth =
     user_1_bet_amount_eth +
     user_2_bet_amount_eth +
@@ -46,21 +46,22 @@ contract('GGbet', (accounts) => {
 
   describe('Betting before sports event has been started', async () => {
     it('User current bet request is rejected', async () => {
-      await gg_bet.getUserBet({from: user_1}).should.be.rejected;
+      await gg_bet.getUserBet({ from: user_1 }).should.be.rejected;
     });
 
     it('Bet on team 1 is rejected', async () => {
-      await gg_bet.betOnTeam1({from: user_1, value: min_bet}).should.be
+      await gg_bet.betOnTeam1({ from: user_1, value: min_bet }).should.be
         .rejected;
     });
 
     it('Bet on team 2 is rejected', async () => {
-      await gg_bet.betOnTeam2({from: user_1, value: min_bet}).should.be
+      await gg_bet.betOnTeam2({ from: user_1, value: min_bet }).should.be
         .rejected;
     });
 
     it('Bet on draw is rejected', async () => {
-      await gg_bet.betOnDraw({from: user_1, value: min_bet}).should.be.rejected;
+      await gg_bet.betOnDraw({ from: user_1, value: min_bet }).should.be
+        .rejected;
     });
   });
 
@@ -76,7 +77,7 @@ contract('GGbet', (accounts) => {
 
     it('Sports event with correct id successfully selected', async () => {
       const event_id = 1;
-      await gg_bet.setCurrentSportsEventById(event_id, {from: owner});
+      await gg_bet.setCurrentSportsEventById(event_id, { from: owner });
 
       //checking data
       const current_sports_event = await gg_bet.current_sports_event();
@@ -93,34 +94,34 @@ contract('GGbet', (accounts) => {
     });
 
     it('Transaction with incorrect id is reverted', async () => {
-      await gg_bet.setCurrentSportsEventById(1000, {from: owner}).should.be
+      await gg_bet.setCurrentSportsEventById(1000, { from: owner }).should.be
         .rejected;
     });
 
     it('Method access rights are correct', async () => {
-      await gg_bet.setCurrentSportsEventById(0, {from: user_1}).should.be
+      await gg_bet.setCurrentSportsEventById(0, { from: user_1 }).should.be
         .rejected;
     });
   });
 
   describe('User 1 making bets', async () => {
     it("User 1 didn't make bets", async () => {
-      const res = await gg_bet.getUserBet({from: user_1});
+      const res = await gg_bet.getUserBet({ from: user_1 });
       assert.equal(res.bet, 0, 'User initial bet expected to be 0');
     });
 
     it('User 1 fails to bet on team 1 (incorrect amount)', async () => {
       const val = web3.utils.toWei('0.00001'); // less than minimal accepted amount
-      await gg_bet.betOnTeam1({from: user_1, value: val}).should.be.rejected;
+      await gg_bet.betOnTeam1({ from: user_1, value: val }).should.be.rejected;
     });
 
     it('User 1 successfully bets on team 1', async () => {
       const val = web3.utils.toWei(user_1_bet_amount_eth.toString());
-      await gg_bet.betOnTeam1({from: user_1, value: val});
+      await gg_bet.betOnTeam1({ from: user_1, value: val });
     });
 
     it('User 1 bet is registered', async () => {
-      const bet_data = await gg_bet.getUserBet({from: user_1});
+      const bet_data = await gg_bet.getUserBet({ from: user_1 });
       const val = web3.utils.toWei(user_1_bet_amount_eth.toString());
 
       assert.equal(bet_data.bet, val, 'stored user bet is incorrect');
@@ -133,30 +134,30 @@ contract('GGbet', (accounts) => {
 
     it('User 1 fails to make another bet', async () => {
       const val = web3.utils.toWei(user_1_bet_amount_eth.toString());
-      await gg_bet.betOnTeam1({from: user_1, value: val}).should.be.rejected;
-      await gg_bet.betOnTeam2({from: user_1, value: val}).should.be.rejected;
-      await gg_bet.betOnDraw({from: user_1, value: val}).should.be.rejected;
+      await gg_bet.betOnTeam1({ from: user_1, value: val }).should.be.rejected;
+      await gg_bet.betOnTeam2({ from: user_1, value: val }).should.be.rejected;
+      await gg_bet.betOnDraw({ from: user_1, value: val }).should.be.rejected;
     });
   });
 
   describe('User 2 making bets', async () => {
     it("User 2 didn't make bets", async () => {
-      const res = await gg_bet.getUserBet({from: user_2});
+      const res = await gg_bet.getUserBet({ from: user_2 });
       assert.equal(res.bet, 0, 'User initial bet expected to be 0');
     });
 
     it('User 2 fails to bet on team 2 (incorrect amount)', async () => {
       const val = web3.utils.toWei('0.00001'); // less than minimal accepted amount
-      await gg_bet.betOnTeam2({from: user_2, value: val}).should.be.rejected;
+      await gg_bet.betOnTeam2({ from: user_2, value: val }).should.be.rejected;
     });
 
     it('User 2 successfully bets on team 2', async () => {
       const val = web3.utils.toWei(user_2_bet_amount_eth.toString());
-      await gg_bet.betOnTeam2({from: user_2, value: val});
+      await gg_bet.betOnTeam2({ from: user_2, value: val });
     });
 
     it('User 2 bet is registered', async () => {
-      const bet_data = await gg_bet.getUserBet({from: user_2});
+      const bet_data = await gg_bet.getUserBet({ from: user_2 });
       const val = web3.utils.toWei(user_2_bet_amount_eth.toString());
 
       assert.equal(bet_data.bet, val, 'stored user bet is incorrect');
@@ -169,30 +170,30 @@ contract('GGbet', (accounts) => {
 
     it('User 2 fails to make another bet', async () => {
       const val = web3.utils.toWei(user_2_bet_amount_eth.toString());
-      await gg_bet.betOnTeam1({from: user_2, value: val}).should.be.rejected;
-      await gg_bet.betOnTeam2({from: user_2, value: val}).should.be.rejected;
-      await gg_bet.betOnDraw({from: user_2, value: val}).should.be.rejected;
+      await gg_bet.betOnTeam1({ from: user_2, value: val }).should.be.rejected;
+      await gg_bet.betOnTeam2({ from: user_2, value: val }).should.be.rejected;
+      await gg_bet.betOnDraw({ from: user_2, value: val }).should.be.rejected;
     });
   });
 
   describe('User 3 making bets', async () => {
     it("User 3 didn't make any bets", async () => {
-      const res = await gg_bet.getUserBet({from: user_3});
+      const res = await gg_bet.getUserBet({ from: user_3 });
       assert.equal(res.bet, 0, 'User initial bet expected to be 0');
     });
 
     it('User 3 fails to bet on draw (incorrect amount)', async () => {
       const val = web3.utils.toWei('0.00001'); // less than minimal accepted amount
-      await gg_bet.betOnDraw({from: user_3, value: val}).should.be.rejected;
+      await gg_bet.betOnDraw({ from: user_3, value: val }).should.be.rejected;
     });
 
     it('User 3 successfully bets on draw', async () => {
       const val = web3.utils.toWei(user_3_bet_amount_eth.toString());
-      await gg_bet.betOnDraw({from: user_3, value: val});
+      await gg_bet.betOnDraw({ from: user_3, value: val });
     });
 
     it('User 3 bet is registered', async () => {
-      const bet_data = await gg_bet.getUserBet({from: user_3});
+      const bet_data = await gg_bet.getUserBet({ from: user_3 });
       const val = web3.utils.toWei(user_3_bet_amount_eth.toString());
 
       assert.equal(bet_data.bet, val, 'stored user bet is incorrect');
@@ -205,20 +206,20 @@ contract('GGbet', (accounts) => {
 
     it('User 3 fails to make another bet', async () => {
       const val = web3.utils.toWei(user_3_bet_amount_eth.toString());
-      await gg_bet.betOnTeam1({from: user_3, value: val}).should.be.rejected;
-      await gg_bet.betOnTeam2({from: user_3, value: val}).should.be.rejected;
-      await gg_bet.betOnDraw({from: user_3, value: val}).should.be.rejected;
+      await gg_bet.betOnTeam1({ from: user_3, value: val }).should.be.rejected;
+      await gg_bet.betOnTeam2({ from: user_3, value: val }).should.be.rejected;
+      await gg_bet.betOnDraw({ from: user_3, value: val }).should.be.rejected;
     });
   });
 
   describe('User 4 making bets', async () => {
     it('User 4 successfully bets on team 1', async () => {
       const val = web3.utils.toWei(user_4_bet_amount_eth.toString());
-      await gg_bet.betOnTeam1({from: user_4, value: val});
+      await gg_bet.betOnTeam1({ from: user_4, value: val });
     });
 
     it('User 4 bet is registered', async () => {
-      const bet_data = await gg_bet.getUserBet({from: user_4});
+      const bet_data = await gg_bet.getUserBet({ from: user_4 });
       const val = web3.utils.toWei(user_4_bet_amount_eth.toString());
 
       assert.equal(bet_data.bet, val, 'stored user bet is incorrect');
@@ -241,6 +242,34 @@ contract('GGbet', (accounts) => {
         balance,
         'The balance of GGbet should be equal to total bet amount'
       );
+    });
+  });
+
+  describe('Closing current event and sending rewards', async () => {
+    it('Only the owner can close current event', async () => {
+      await gg_bet.endCurrentSportsEvent('team_1', 1, 20, { from: user_2 })
+        .should.be.rejected;
+    });
+
+    it('Reject on incorrect outcome', async () => {
+      await gg_bet.endCurrentSportsEvent('team', 1, 20, { from: owner }).should
+        .be.rejected;
+    });
+
+    it('Current event succesfully closed with Team 1 win', async () => {
+      await gg_bet.endCurrentSportsEvent('team_1', 1, 30, { from: owner });
+      const flag = await gg_bet.sports_event_in_progress();
+      assert.equal(flag, false, 'Sports event flag must be false');
+    });
+
+    it('Bet rewards successully sent to user 1', async () => {
+      gg_bet.BetsRefunded().once('data', (event) => {
+        assert.equal(
+          event.returnValues._outcome,
+          'team_1',
+          'Incorrect event return value'
+        );
+      });
     });
   });
 });
