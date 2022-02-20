@@ -272,4 +272,13 @@ contract('GGbet', (accounts) => {
       });
     });
   });
+
+  describe('Withdrawing ether from the contract', async () => {
+    it('Making sure withdraw function is restricted', async () => {
+      await gg_bet.withdraw(1000000, { from: user_1 }).should.be.rejected;
+    });
+    it('Calling withdraw function', async () => {
+      await gg_bet.withdraw(1000000, { from: owner });
+    });
+  });
 });

@@ -27,6 +27,10 @@ contract GGbet {
   address[] private team_2_bets_addresses;
   address[] private draw_bets_addresses;
 
+  /*
+    add a WITHDRAW function
+  */
+
   constructor() {
     initializeSportsEvents();
   }
@@ -45,6 +49,11 @@ contract GGbet {
   /*
     PUBLIC functions
   */
+
+  function withdraw(uint value) public restricted {
+    require(address(this).balance >= value, 'Not enough ether');
+    payable(owner).transfer(value);
+  }
 
   function setCurrentSportsEventById(uint8 _id) public restricted {
     (
@@ -175,7 +184,7 @@ contract GGbet {
 
     sports_event_in_progress = false;
     refundBets(_outcome, coef_int_part, coef_decimal_part);
-    // здесь очистить память о ставках
+    deleteBetsData();
   }
 
   /*
@@ -210,17 +219,38 @@ contract GGbet {
 
       require(refund_amount <= address(this).balance, 'Not enough ether to refund a bet');
       user_address.transfer(refund_amount);
+      deleteUserBetData(user_address);
     }
 
     emit BetsRefunded('team_1');
   }
 
   function refundBetsOnTeam2(uint8 coef_int_part, uint8 coef_decimal_part) private {
+    for (uint i = 0; i < team_2_bets_addresses.length; i++) {
+      address payable user_address = payable(team_2_bets_addresses[i]);
+      uint bet_amount = team_2_bets[user_address];
+      uint refund_amount = calculateBetRefund(bet_amount, coef_int_part, coef_decimal_part);
 
+      require(refund_amount <= address(this).balance, 'Not enough ether to refund a bet');
+      user_address.transfer(refund_amount);
+      deleteUserBetData(user_address);
+    }
+
+    emit BetsRefunded('team_2');
   }
 
   function refundBetsOnDraw(uint8 coef_int_part, uint8 coef_decimal_part) private {
+    for (uint i = 0; i < draw_bets_addresses.length; i++) {
+      address payable user_address = payable(draw_bets_addresses[i]);
+      uint bet_amount = draw_bets[user_address];
+      uint refund_amount = calculateBetRefund(bet_amount, coef_int_part, coef_decimal_part);
 
+      require(refund_amount <= address(this).balance, 'Not enough ether to refund a bet');
+      user_address.transfer(refund_amount);
+      deleteUserBetData(user_address);
+    }
+
+    emit BetsRefunded('draw');
   }
 
   function calculateBetRefund(
@@ -233,6 +263,18 @@ contract GGbet {
     requireDecimalIsTwoDigit(coef_decimal_part);
 
     return bet_amount * coef_int_part + bet_amount / 100 * coef_decimal_part;
+  }
+
+  function deleteBetsData() private {
+    delete team_1_bets_addresses;
+    delete team_2_bets_addresses;
+    delete draw_bets_addresses;
+  }
+
+  function deleteUserBetData(address user_address) private {
+    delete team_1_bets[user_address];
+    delete team_2_bets[user_address];
+    delete draw_bets[user_address];
   }
 
   function initializeSportsEvents() private {
