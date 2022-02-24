@@ -44,7 +44,7 @@ contract GGbet {
   }
 
   event BetAccepted(address indexed _address, uint _amount, string _outcome);
-  event BetsRefunded(string _outcome);
+  event SportsEventClosed();
 
   /*
     PUBLIC functions
@@ -185,6 +185,8 @@ contract GGbet {
     sports_event_in_progress = false;
     refundBets(_outcome, coef_int_part, coef_decimal_part);
     deleteBetsData();
+
+    emit SportsEventClosed();
   }
 
   /*
@@ -219,10 +221,7 @@ contract GGbet {
 
       require(refund_amount <= address(this).balance, 'Not enough ether to refund a bet');
       user_address.transfer(refund_amount);
-      deleteUserBetData(user_address);
     }
-
-    emit BetsRefunded('team_1');
   }
 
   function refundBetsOnTeam2(uint8 coef_int_part, uint8 coef_decimal_part) private {
@@ -233,10 +232,7 @@ contract GGbet {
 
       require(refund_amount <= address(this).balance, 'Not enough ether to refund a bet');
       user_address.transfer(refund_amount);
-      deleteUserBetData(user_address);
     }
-
-    emit BetsRefunded('team_2');
   }
 
   function refundBetsOnDraw(uint8 coef_int_part, uint8 coef_decimal_part) private {
@@ -247,10 +243,7 @@ contract GGbet {
 
       require(refund_amount <= address(this).balance, 'Not enough ether to refund a bet');
       user_address.transfer(refund_amount);
-      deleteUserBetData(user_address);
     }
-
-    emit BetsRefunded('draw');
   }
 
   function calculateBetRefund(
@@ -260,21 +253,40 @@ contract GGbet {
   )
     private pure returns (uint refund_amount)
   {
-    requireDecimalIsTwoDigit(coef_decimal_part);
+    requireDecimalIsNormalized(coef_decimal_part);
 
     return bet_amount * coef_int_part + bet_amount / 100 * coef_decimal_part;
   }
 
   function deleteBetsData() private {
+    deleteUserBetsOnTeam1();
+    deleteUserBetsOnTeam2();
+    deleteUserBetsOnDraw();
+
     delete team_1_bets_addresses;
     delete team_2_bets_addresses;
     delete draw_bets_addresses;
   }
 
-  function deleteUserBetData(address user_address) private {
-    delete team_1_bets[user_address];
-    delete team_2_bets[user_address];
-    delete draw_bets[user_address];
+  function deleteUserBetsOnTeam1() private {
+    for (uint i = 0; i < team_1_bets_addresses.length; i++) {
+      address user = team_1_bets_addresses[i];
+      delete team_1_bets[user];
+    }
+  }
+
+  function deleteUserBetsOnTeam2() private {
+    for (uint i = 0; i < team_2_bets_addresses.length; i++) {
+      address user = team_2_bets_addresses[i];
+      delete team_2_bets[user];
+    }
+  }
+
+  function deleteUserBetsOnDraw() private {
+    for (uint i = 0; i < draw_bets_addresses.length; i++) {
+      address user = draw_bets_addresses[i];
+      delete draw_bets[user];
+    }
   }
 
   function initializeSportsEvents() private {
@@ -312,8 +324,8 @@ contract GGbet {
     require(bet == 0, 'This user has already made a bet');
   }
 
-  function requireDecimalIsTwoDigit(uint8 decimal) private pure {
-    require(decimal >= 10 && decimal <= 99, 'Decimal part must be two-digit');
+  function requireDecimalIsNormalized(uint8 decimal) private pure {
+    require(decimal >= 0 && decimal <= 99, 'Decimal part must be integer in range [0, 99]');
   }
 
   function requireCorrectOutcome(string memory _outcome) private pure {

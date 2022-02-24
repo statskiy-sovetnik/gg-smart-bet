@@ -36,6 +36,12 @@
 				"type": "event"
 			},
 			{
+				"anonymous": false,
+				"inputs": [],
+				"name": "SportsEventClosed",
+				"type": "event"
+			},
+			{
 				"inputs": [],
 				"name": "betOnDraw",
 				"outputs": [],
@@ -97,6 +103,29 @@
 					}
 				],
 				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "_outcome",
+						"type": "string"
+					},
+					{
+						"internalType": "uint8",
+						"name": "coef_int_part",
+						"type": "uint8"
+					},
+					{
+						"internalType": "uint8",
+						"name": "coef_decimal_part",
+						"type": "uint8"
+					}
+				],
+				"name": "endCurrentSportsEvent",
+				"outputs": [],
+				"stateMutability": "nonpayable",
 				"type": "function"
 			},
 			{
@@ -230,6 +259,19 @@
 				],
 				"stateMutability": "view",
 				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "value",
+						"type": "uint256"
+					}
+				],
+				"name": "withdraw",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
 			}
 		],
 		"devdoc": {
@@ -260,10 +302,11 @@
 	},
 	"sources": {
 		"bookmaker-dapp/contracts/GGbet.sol": {
-			"keccak256": "0xa0677b2e967628ff25c63616803c02e679cfcf35a536a7f971c8201894a14668",
+			"keccak256": "0x8555a6977b0313a2384295da0fd526a27b8c17d77cc1bcef4ca45f71a375a785",
+			"license": "MIT",
 			"urls": [
-				"bzz-raw://fc83f02f2f800c9a5953515a72ee4caa8e221a51fe8e37095707ee82f1f9d06e",
-				"dweb:/ipfs/QmU1rzdcxJMvoAdKtPusrURHrKX5XQvqzzjkkNtCVWyyeD"
+				"bzz-raw://908eff99d9c3823b37f4e60e93f85cf3cb61669dbdc4556ac807fe4daf961028",
+				"dweb:/ipfs/QmPZDzmjF4rC9bWgdh2jV4nDxQ5rBKQfTF9hat2G8syQ3g"
 			]
 		}
 	},

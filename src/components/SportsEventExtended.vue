@@ -1,46 +1,48 @@
 <template>
-  <div class="box">
-    <div class="container content-container">
-      <div class="content-wrapper">
-        <div class="teams-data">
-          <div class="team-wrapper">
-            <span class="team-name">{{ sports_event.team_1_name }}</span>
-            <img
-              :src="sports_event.team_1_logo"
-              alt="Team 1 Logo"
-              class="team-logo"
-            />
+  <div class="wrapper">
+    <div class="box">
+      <div class="container content-container">
+        <div class="content-wrapper">
+          <div class="teams-data">
+            <div class="team-wrapper">
+              <span class="team-name">{{ sports_event.team_1_name }}</span>
+              <img
+                :src="sports_event.team_1_logo"
+                alt="Team 1 Logo"
+                class="team-logo"
+              />
+            </div>
+
+            <span class="team-divider">-</span>
+
+            <div class="team-wrapper">
+              <img
+                :src="sports_event.team_2_logo"
+                alt="Team 2 Logo"
+                class="team-logo"
+              />
+              <span class="team-name">{{ sports_event.team_2_name }}</span>
+            </div>
           </div>
 
-          <span class="team-divider">-</span>
-
-          <div class="team-wrapper">
-            <img
-              :src="sports_event.team_2_logo"
-              alt="Team 2 Logo"
-              class="team-logo"
-            />
-            <span class="team-name">{{ sports_event.team_2_name }}</span>
+          <div v-if="user_bet_is_accepted" class="user-bet-info-block">
+            <p class="user-bet">
+              Your bet is {{ user_bet_data?.bet }} Wei <br />
+              on {{ outcome_label }}
+            </p>
           </div>
-        </div>
+          <!-- Display bet pending    -->
+          <div v-else-if="do_display_pending_bet" class="bet-pending-text">
+            Your bet is pending...
+          </div>
 
-        <div v-if="user_bet_is_accepted" class="user-bet-info-block">
-          <p class="user-bet">
-            Your bet is {{ user_bet_data?.bet }} Wei <br />
-            on {{ outcome_label }}
-          </p>
+          <ControlPanel
+            v-else
+            :gg_bet_contract="gg_bet_contract"
+            :sports_event="sports_event"
+            @betRequest="handleBetRequest"
+          />
         </div>
-        <!-- Display bet pending    -->
-        <div v-else-if="do_display_pending_bet" class="bet-pending-text">
-          Your bet is pending...
-        </div>
-
-        <ControlPanel
-          v-else
-          :gg_bet_contract="gg_bet_contract"
-          :sports_event="sports_event"
-          @betRequest="handleBetRequest"
-        />
       </div>
     </div>
   </div>
@@ -256,6 +258,10 @@
         tx.to === this.gg_bet_contract.options.address
       );
     }
+
+    handleCloseEventBtnClick() {}
+
+    closeCurrentSportsEvent() {}
   }
 </script>
 

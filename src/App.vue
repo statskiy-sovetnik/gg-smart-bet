@@ -1,6 +1,9 @@
 <template>
   <div class="gg-root">
-    <Loading v-if="loading" />
+    <Loading
+      v-if="loading"
+      @closingSportsEventStarted="handleClosingSportsEventStart"
+    />
 
     <template v-else>
       <SportsEventSelection
@@ -10,12 +13,19 @@
         @sportsEventSelect="handleSportsEventSelect"
       />
 
-      <SportsEventExtended
-        v-else
-        :gg_bet_contract="gg_bet_contract"
-        :sports_event="sports_event"
-        :user="user"
-      />
+      <template v-else>
+        <SportsEventExtended
+          :gg_bet_contract="gg_bet_contract"
+          :sports_event="sports_event"
+          :user="user"
+        />
+
+        <CloseEventSection
+          :gg_bet_contract="gg_bet_contract"
+          :sports_event="sports_event"
+          :user="user"
+        />
+      </template>
     </template>
   </div>
 </template>
@@ -31,9 +41,11 @@
   import SportsEvent from '@/types/SportsEvent';
   import SportsEventSelection from '@/components/SportsEventSelection.vue';
   import SportsEventExtended from '@/components/SportsEventExtended.vue';
+  import CloseEventSection from '@/components/CloseEventSection.vue';
 
   @Options({
     components: {
+      CloseEventSection,
       SportsEventExtended,
       SportsEventSelection,
       Loading,
@@ -52,7 +64,7 @@
     accounts: string[] = [];
 
     //gg_bet_contract_address = '0x3f4327cE45Ca6041bDBdf23aeA6fE8b43e4a73D7'; // Move it to main.ts??
-    gg_bet_contract_address = '0x830b0DE76dbAf97a9CB1c363515f91415B0B5125'; // Move it to main.ts??
+    gg_bet_contract_address = '0x94e792a4fe9cC0208b78914EFE5938a3f056127a';
     gg_bet_contract: Contract | null = null;
     sports_event_in_progress = false;
     sports_event: SportsEvent | null = null;
@@ -66,6 +78,7 @@
 
       await this.updateUserData();
       await this.updateSportsEvent();
+      this.subscribeOnSportsEventClosing();
 
       this.loading = false;
     }
@@ -127,6 +140,20 @@
         .call();
     }
 
+    subscribeOnSportsEventClosing() {
+      this.gg_bet_contract?.once('SportsEventClosed', (error) => {
+        if (!error) {
+          this.handleSportsEventClosing();
+        }
+      });
+    }
+
+    handleSportsEventClosing() {
+      this.sports_event_in_progress = false;
+      this.sports_event = null;
+      this.loading = false;
+    }
+
     async handleSportsEventSelect(id: string) {
       this.loading = true;
 
@@ -144,6 +171,10 @@
       await this.gg_bet_contract?.methods
         .setCurrentSportsEventById(id)
         .send({ from: this.user.account });
+    }
+
+    handleClosingSportsEventStart() {
+      this.loading = true;
     }
   }
 </script>

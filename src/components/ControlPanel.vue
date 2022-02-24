@@ -58,6 +58,8 @@
   import { getConnectedWeb3Instance } from '@/utils/getConnectedWeb3Instance';
   import { BigNumber } from 'bignumber.js';
   import { Contract } from 'web3-eth-contract';
+  import { calculateCoefFromPercent } from '@/utils/calculateCoefFromPercent';
+  import { calculateDrawCoef } from '@/utils/calculateDrawCoef';
 
   const web3 = getConnectedWeb3Instance();
 
@@ -83,22 +85,18 @@
 
     get team_1_win_coef(): number {
       const percent = Number(this.sports_event?.team_1_win_percent);
-      const coefRaw = this.calculateCoefFromPercent(percent);
-      return Number(coefRaw.toFixed(2));
+      return calculateCoefFromPercent(percent);
     }
 
     get draw_coef(): number {
       const t1 = this.sports_event?.team_1_win_percent || 0;
       const t2 = this.sports_event?.team_2_win_percent || 0;
-      const percent = Number(100 - t1 - t2);
-      const coefRaw = this.calculateCoefFromPercent(percent);
-      return Number(coefRaw.toFixed(2));
+      return calculateDrawCoef(t1, t2);
     }
 
     get team_2_win_coef(): number {
       const percent = Number(this.sports_event?.team_2_win_percent);
-      const coefRaw = this.calculateCoefFromPercent(percent);
-      return Number(coefRaw.toFixed(2));
+      return calculateCoefFromPercent(percent);
     }
 
     get min_bet_in_eth(): string {
@@ -109,11 +107,6 @@
 
     async created() {
       await this.updateMinBetInWei();
-    }
-
-    calculateCoefFromPercent(percent: number): number {
-      const probability = percent / 100;
-      return 1 / probability;
     }
 
     async updateMinBetInWei() {

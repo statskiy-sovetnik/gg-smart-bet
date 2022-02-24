@@ -261,16 +261,6 @@ contract('GGbet', (accounts) => {
       const flag = await gg_bet.sports_event_in_progress();
       assert.equal(flag, false, 'Sports event flag must be false');
     });
-
-    it('Bet rewards successully sent to user 1', async () => {
-      gg_bet.BetsRefunded().once('data', (event) => {
-        assert.equal(
-          event.returnValues._outcome,
-          'team_1',
-          'Incorrect event return value'
-        );
-      });
-    });
   });
 
   describe('Withdrawing ether from the contract', async () => {
