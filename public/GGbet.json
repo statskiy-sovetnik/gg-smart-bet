@@ -25317,7 +25317,7 @@
     "version": "0.8.4+commit.c7e474f2.Emscripten.clang"
   },
   "networks": {
-    "5777": {
+    "4": {
       "events": {
         "0x5d8f70e9152d0ef26d34521cebb7cb7355e74f248853d2ea29bd870fff35f522": {
           "anonymous": false,
@@ -25344,19 +25344,6 @@
           "name": "BetAccepted",
           "type": "event"
         },
-        "0x29c5b2d9b1697298532bbfb34a493188b165c1d910b90854c1de7027661cb712": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "string",
-              "name": "_outcome",
-              "type": "string"
-            }
-          ],
-          "name": "BetsRefunded",
-          "type": "event"
-        },
         "0xbbde21cc46478a8e2fd9c6b5ce17e627f0d9a6ed30292d956c36031361576e8e": {
           "anonymous": false,
           "inputs": [],
@@ -25365,12 +25352,12 @@
         }
       },
       "links": {},
-      "address": "0x94e792a4fe9cC0208b78914EFE5938a3f056127a",
-      "transactionHash": "0x3eef41be7356a3494c6b99524b9f991e6b60cdecf0a162dd79b4da33c275dce8"
+      "address": "0xd821A8F0c47Fc55587B80e417189b5d26359A950",
+      "transactionHash": "0x49184a886d5e12a1aeb9368aa262878ee50daa073f064dfa514502f7317c6380"
     }
   },
   "schemaVersion": "3.2.3",
-  "updatedAt": "2022-02-23T13:54:20.607Z",
+  "updatedAt": "2022-02-24T15:53:59.860Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",

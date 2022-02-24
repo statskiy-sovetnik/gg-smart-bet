@@ -302,11 +302,11 @@
 	},
 	"sources": {
 		"bookmaker-dapp/contracts/GGbet.sol": {
-			"keccak256": "0x8555a6977b0313a2384295da0fd526a27b8c17d77cc1bcef4ca45f71a375a785",
+			"keccak256": "0xc28e7cec7efcc9fa1f1bb71797795a579d2d37018beaf203e28b6f1b41606e63",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://908eff99d9c3823b37f4e60e93f85cf3cb61669dbdc4556ac807fe4daf961028",
-				"dweb:/ipfs/QmPZDzmjF4rC9bWgdh2jV4nDxQ5rBKQfTF9hat2G8syQ3g"
+				"bzz-raw://929bddf69b59e10c1b77de1c6d64d7310438aac411e37481a827cb062a9d3d00",
+				"dweb:/ipfs/QmcxuUGFUucE25eGrptL2FsKqP4VennP8VQwqnPDjqyGAL"
 			]
 		}
 	},

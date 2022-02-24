@@ -63,8 +63,8 @@
     };
     accounts: string[] = [];
 
-    //gg_bet_contract_address = '0x3f4327cE45Ca6041bDBdf23aeA6fE8b43e4a73D7'; // Move it to main.ts??
-    gg_bet_contract_address = '0x94e792a4fe9cC0208b78914EFE5938a3f056127a';
+    gg_bet_contract_address = '0xd821A8F0c47Fc55587B80e417189b5d26359A950'; // on rinkeby
+    //gg_bet_contract_address = '0x94e792a4fe9cC0208b78914EFE5938a3f056127a';
     gg_bet_contract: Contract | null = null;
     sports_event_in_progress = false;
     sports_event: SportsEvent | null = null;

@@ -69,7 +69,8 @@ module.exports = {
             'https://ropsten.infura.io/v3/4fe4d0591f4c430991c92f5a747387a7',
         }),
       network_id: 3,
-      gas: 8000000,
+      gas: 7900000,
+      gasPrice: 25000000000, // 25 gwei
       confirmations: 2,
       timeoutBlocks: 200,
       skipDryRun: true,
