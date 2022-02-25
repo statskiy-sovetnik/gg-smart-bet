@@ -1,3 +1,3 @@
 module.exports = {
-  publicUrl: 'gg-smart-bet',
+  publicPath: process.env.NODE_ENV === 'production' ? '/gg-smart-bet/' : '/',
 };
