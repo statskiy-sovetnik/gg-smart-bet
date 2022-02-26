@@ -63,6 +63,7 @@
     };
     accounts: string[] = [];
 
+    etherscan_api_key = 'JWZAIV2C8HHU2R9WYT9HY8U4PACSGE6T8Z';
     gg_bet_contract_address = '0xd821A8F0c47Fc55587B80e417189b5d26359A950'; // on rinkeby
     //gg_bet_contract_address = '0x94e792a4fe9cC0208b78914EFE5938a3f056127a';
     gg_bet_contract: Contract | null = null;
@@ -88,7 +89,10 @@
     }
 
     async initGGbetContract() {
-      const abi = await fetchGGbetAbi();
+      const abi = await fetchGGbetAbi(
+        this.gg_bet_contract_address,
+        this.etherscan_api_key
+      );
       this.gg_bet_contract = new this.web3.eth.Contract(
         abi,
         this.gg_bet_contract_address
