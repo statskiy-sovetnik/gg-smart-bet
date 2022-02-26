@@ -76,18 +76,27 @@
     async closeCurrentSportsEvent(outcome: string, coef: number) {
       const coef_integer_part = Math.trunc(coef);
       const coef_decimal_part = this.getCoefDecimalPartNormalized(coef);
-      await this.gg_bet_contract?.methods
-        .endCurrentSportsEvent(outcome, coef_integer_part, coef_decimal_part)
-        .send({ from: this.user.account });
+
+      try {
+        await this.gg_bet_contract?.methods
+          .endCurrentSportsEvent(outcome, coef_integer_part, coef_decimal_part)
+          .send({ from: this.user.account });
+      } catch (e) {
+        this.emitClosingSportsEventCancel();
+      }
     }
 
     getCoefDecimalPartNormalized(coef: number): number {
-      const decimal = coef % 1;
+      const decimal = Number((coef % 1).toFixed(2));
       return decimal ? decimal * 100 : decimal;
     }
 
     emitClosingSportsEventStart() {
       this.$emit('closingSportsEventStarted');
+    }
+
+    emitClosingSportsEventCancel() {
+      this.$emit('closingSportsEventCancelled');
     }
   }
 </script>

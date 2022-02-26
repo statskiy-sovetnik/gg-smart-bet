@@ -1,9 +1,6 @@
 <template>
   <div class="gg-root">
-    <Loading
-      v-if="loading"
-      @closingSportsEventStarted="handleClosingSportsEventStart"
-    />
+    <Loading v-if="loading" />
 
     <template v-else>
       <SportsEventSelection
@@ -24,6 +21,8 @@
           :gg_bet_contract="gg_bet_contract"
           :sports_event="sports_event"
           :user="user"
+          @closingSportsEventCancelled="handleClosingSportsEventCancel"
+          @closingSportsEventStarted="handleClosingSportsEventStart"
         />
       </template>
     </template>
@@ -179,6 +178,10 @@
 
     handleClosingSportsEventStart() {
       this.loading = true;
+    }
+
+    handleClosingSportsEventCancel() {
+      this.loading = false;
     }
   }
 </script>
